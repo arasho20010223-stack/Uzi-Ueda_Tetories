@@ -5,12 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>大食いテトリス</title>
-<!-- フォント: preconnectで接続を事前確立、display=swapでフォールバックフォントで即表示 -->
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
-
-<!-- ═══ PWA 対応 ═══ -->
 
 <meta name="application-name" content="大食いテトリス">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -21,11 +19,7 @@
 <meta name="theme-color" content="#050a14">
 <meta name="description" content="ルーレットでブロックを決めて積み上がりを消す逆テトリスゲーム">
 
-<!-- Apple Touch Icon (inline SVG → Data URI) -->
-
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230e0e18'/%3E%3Ctext x='256' y='320' font-size='280' text-anchor='middle' fill='%23ff2d78'%3E%F0%9F%8D%BD%EF%B8%8F%3C/text%3E%3C/svg%3E">
-
-<!-- Web App Manifest (inline) -->
 
 <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%E5%A4%A7%E9%A3%9F%E3%81%84%E3%83%86%E3%83%88%E3%83%AA%E3%82%B9%22%2C%22short_name%22%3A%22%E5%A4%A7%E9%A3%9F%E3%81%84%E3%83%86%E3%83%88%E3%83%AA%E3%82%B9%22%2C%22description%22%3A%22%E3%83%AB%E3%83%BC%E3%83%AC%E3%83%83%E3%83%88%E3%81%A7%E3%83%96%E3%83%AD%E3%83%83%E3%82%AF%E3%82%92%E6%B1%BA%E3%82%81%E3%81%A6%E7%A9%8D%E3%81%BF%E4%B8%8A%E3%81%8C%E3%82%8A%E3%82%92%E6%B6%88%E3%81%99%E9%80%86%E3%83%86%E3%83%88%E3%83%AA%E3%82%B9%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait%22%2C%22background_color%22%3A%22%230e0e18%22%2C%22theme_color%22%3A%22%230e0e18%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%2520viewBox%3D'0%25200%2520512%2520512'%253E%253Crect%2520width%3D'512'%2520height%3D'512'%2520rx%3D'100'%2520fill%3D'%25230e0e18'%2F%253E%253Ctext%2520x%3D'256'%2520y%3D'320'%2520font-size%3D'280'%2520text-anchor%3D'middle'%253E%25F0%259F%258D%25BD%25EF%25B8%258F%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
 <style>
@@ -644,8 +638,6 @@ min-width:80px;text-align:center;
 </head>
 <body>
 
-<!-- TITLE -->
-
 <div class="screen active" id="titleScreen">
   <div class="title-logo">🍽️ 大食い<span>テ</span>トリス</div>
   <div class="title-sub">EAT &amp; DROP</div>
@@ -655,8 +647,6 @@ min-width:80px;text-align:center;
     ブロックは<b>自動で落下</b>する<br>
     ラインを消して<b>全消しを目指せ！</b>
   </div>
-
-  <!-- ゲームモード選択 -->
 
   <div class="gmode-wrap">
     <div class="gmode-label">-- ゲームモード --</div>
@@ -679,8 +669,6 @@ min-width:80px;text-align:center;
 
 </div>
 
-<!-- オリエンテーション（初回チュートリアル） -->
-
 <div class="screen" id="orientOverlay">
   <div id="orientHeader">
     <div id="orientTitle">大食いテトリス　遊び方</div>
@@ -700,17 +688,12 @@ min-width:80px;text-align:center;
   <div id="trCountdown" class="tr-countdown">3</div>
 </div>
 
-<!-- BAN -->
-
 <div class="screen" id="banScreen">
-
-  <!-- 上部: 設定エリア（固定） -->
 
   <div id="banSettingsCol">
     <div class="ban-title">🚫 設定 &amp; BAN</div>
 
 ```
-<!-- 難易度 -->
 <div class="ban-section">
   <div class="ban-section-label">-- 難易度 --</div>
   <div style="display:flex;gap:6px;">
@@ -720,7 +703,7 @@ min-width:80px;text-align:center;
   </div>
 </div>
 
-<!-- 勝利条件 -->
+
 <div class="ban-section">
   <div class="ban-section-label">-- 勝利条件 --</div>
   <div style="display:flex;gap:6px;">
@@ -730,13 +713,11 @@ min-width:80px;text-align:center;
   </div>
 </div>
 
-<!-- 説明 -->
+
 <div class="ban-sub" id="banScreenSub">毎ターン開始時にBANを選べます<br>ここでは難易度・勝利条件を設定してください</div>
 ```
 
   </div>
-
-  <!-- 中央: ミニマップ（flex:1で残りスペースを全部使う） -->
 
   <div id="banMiniSection">
     <div id="banMiniInner">
@@ -744,7 +725,7 @@ min-width:80px;text-align:center;
         <span class="ban-mini-title">📊 初期盤面プレビュー</span>
         <div class="ban-mini-stats">
           <span id="banSbRemain" class="ban-mini-val">--</span><span class="ban-mini-unit">段</span>
-          <span id="banSbCells" class="ban-mini-val" style="color:var(--dim);font-size:.6rem;">--</span><span class="ban-mini-unit" style="color:var(--dim);">セル</span>
+          <span id="banSbCells" class="ban-mini-val" style="color:#6a8aaa;font-size:.6rem;">--</span><span class="ban-mini-unit" style="color:#6a8aaa;">セル</span>
         </div>
         <button id="banRegenBtn" onclick="regenPreview()">🔄 別パターン</button>
       </div>
@@ -755,8 +736,6 @@ min-width:80px;text-align:center;
     </div>
   </div>
 
-  <!-- 下部: ボタン（固定） -->
-
   <div id="banFooter">
     <button class="btn btn-p" style="width:100%;max-width:320px;font-size:.8rem;padding:16px 0;" onclick="startGame()">▶ ゲームスタート</button>
     <button class="btn btn-s" style="width:100%;max-width:320px;font-size:.72rem;padding:11px 0;" onclick="showScreen('titleScreen')">← 戻る</button>
@@ -764,19 +743,15 @@ min-width:80px;text-align:center;
 
 </div>
 
-<!-- GAME -->
-
 <div class="screen" id="gameScreen">
   <div id="hud">
     <div class="hud-logo" id="hudLogo">🍽️ 大食いテトリス</div>
     <div class="hud-stats">
-      <div class="hud-st"><span class="hl">SCORE</span><span class="hv" id="hudScore" style="color:var(--gold)">0</span></div>
-      <div class="hud-st"><span class="hl">LINES</span><span class="hv" id="hudLines" style="color:var(--cyan)">0</span></div>
-      <div class="hud-st"><span class="hl">TURNS</span><span class="hv" id="hudTurns" style="color:var(--green)">0</span></div>
+      <div class="hud-st"><span class="hl">SCORE</span><span class="hv" id="hudScore" style="color:#ffee00">0</span></div>
+      <div class="hud-st"><span class="hl">LINES</span><span class="hv" id="hudLines" style="color:#00ccff">0</span></div>
+      <div class="hud-st"><span class="hl">TURNS</span><span class="hv" id="hudTurns" style="color:#00ff41">0</span></div>
     </div>
   </div>
-
-  <!-- 非表示（JS参照用） -->
 
   <div style="display:none">
     <span id="phaseVal"></span>
@@ -784,8 +759,6 @@ min-width:80px;text-align:center;
     <span id="miniLabel"></span>
     <canvas id="miniPiece" width="40" height="30"></canvas>
   </div>
-
-  <!-- ゲームエリア：盤面 + 右サイドバー -->
 
   <div id="gameArea">
     <div id="boardWrap">
@@ -802,18 +775,17 @@ min-width:80px;text-align:center;
     </div>
 
 ```
-<!-- 右サイドバー：ミニマップ常時表示 -->
 <div id="sidebar">
   <div class="sb-label">盤面</div>
   <div id="minimapWrap">
     <canvas id="minimapCanvas"></canvas>
-    <!-- 残り段数バー -->
+    
     <div id="minimapBar">
       <div id="minimapBarFill"></div>
     </div>
   </div>
   <div class="sb-stat"><span id="sbRemain">--</span><span class="sb-unit">段</span></div>
-  <div class="sb-stat" style="color:var(--cyan)"><span id="sbLines">0</span><span class="sb-unit">L</span></div>
+  <div class="sb-stat" style="color:#00ccff"><span id="sbLines">0</span><span class="sb-unit">L</span></div>
 </div>
 ```
 
@@ -824,22 +796,18 @@ min-width:80px;text-align:center;
   </div>
 </div>
 
-<!-- RESULT -->
-
 <div class="screen" id="resultScreen">
   <div class="res-title" id="resTitle">GAME OVER</div>
   <div class="res-cards">
-    <div class="res-card"><span class="rc-lbl">SCORE</span><span class="rc-val" id="rcScore" style="color:var(--gold)">0</span></div>
-    <div class="res-card"><span class="rc-lbl">LINES</span><span class="rc-val" id="rcLines" style="color:var(--cyan)">0</span></div>
-    <div class="res-card"><span class="rc-lbl">TURNS</span><span class="rc-val" id="rcTurns" style="color:var(--green)">0</span></div>
+    <div class="res-card"><span class="rc-lbl">SCORE</span><span class="rc-val" id="rcScore" style="color:#ffee00">0</span></div>
+    <div class="res-card"><span class="rc-lbl">LINES</span><span class="rc-val" id="rcLines" style="color:#00ccff">0</span></div>
+    <div class="res-card"><span class="rc-lbl">TURNS</span><span class="rc-val" id="rcTurns" style="color:#00ff41">0</span></div>
     <div class="res-card"><span class="rc-lbl">BLOCKS</span><span class="rc-val" id="rcBlocks">0</span></div>
   </div>
   <div class="res-sub" id="resSub"></div>
   <button class="btn btn-p" style="max-width:280px;" onclick="showBanScreen()">もう一度</button>
   <button class="btn btn-s" style="max-width:280px;" onclick="showScreen('titleScreen')">タイトルへ</button>
 </div>
-
-<!-- ROULETTE (再構築) -->
 
 <div id="rouletteOverlay">
   <div id="rlMapSection">
