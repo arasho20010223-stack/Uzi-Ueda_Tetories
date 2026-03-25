@@ -664,7 +664,7 @@ min-width:80px;text-align:center;
     </div>
   </div>
 
-<button class="btn btn-p" id="titleStartBtn" onclick="showBanScreen()">▶ 逆テトリスを開始</button>
+<button class="btn btn-p" id="titleStartBtn" onclick="gameMode==='standard_reverse'?showBanScreen():startGame()">▶ 逆テトリスを開始</button>
 <button class="btn btn-s" id="titleHelpBtn" onclick="showHelp()">？ 遊び方</button>
 
 </div>
@@ -1645,10 +1645,17 @@ function normalSpawnNext(){
 
   piece = { name, color:p.color, shape:sh, x:cx, y:-sh.length };
 
-  // スポーン不能 or 15段ライン超過でゲームオーバー
-  const NORMAL_GO_ROW = CFG.ROWS - 15; // = 5
-  const overLimit = board[NORMAL_GO_ROW].some(c => c !== 0);
-  if(!valid(board, piece, 0, 0) || overLimit){
+  // 15段ライン超過チェック（スポーン前に確認）
+  const NORMAL_GO_ROW = CFG.ROWS - 15; // row5
+  if(board[NORMAL_GO_ROW].some(c => c !== 0)){
+    piece = null;
+    normalGameOver();
+    return;
+  }
+
+  // スポーン不能チェック
+  if(!valid(board, piece, 0, 0)){
+    piece = null;
     normalGameOver();
     return;
   }
@@ -1684,15 +1691,7 @@ function normalLockPiece(){
     if(v && piece.y+r >= 0) board[piece.y+r][piece.x+c] = piece.color;
   }));
 
-  // ゲームオーバー判定: 上から5行目(row4)にブロックが来たら = 15段積んだ状態
-  // ROWS=20 → row4 = 下から16段目 → 15段積んだ高さ
-  const NORMAL_GO_ROW = CFG.ROWS - 15; // = 5
-  if(board[NORMAL_GO_ROW].some(c => c !== 0)){
-    normalGameOver();
-    return;
-  }
-
-  // ライン消去
+  // ライン消去（先に消してから判定）
   const n = clearLines();
   score += CFG.SCORE_TABLE[n] || 0;
   lines += n;
@@ -1703,6 +1702,14 @@ function normalLockPiece(){
       (bonusLabels[n] || n+'LINE') + '  +' + (CFG.SCORE_TABLE[n]||0),
       n >= 4 ? '#ffee00' : n >= 3 ? '#00ccff' : '#00ff41'
     );
+  }
+
+  // ゲームオーバー判定: ライン消去後も15段ライン（row5）を超えていたら
+  const NORMAL_GO_ROW = CFG.ROWS - 15; // = 5
+  if(board[NORMAL_GO_ROW].some(c => c !== 0)){
+    piece = null;
+    normalGameOver();
+    return;
   }
 
   piece = null;
@@ -2174,7 +2181,11 @@ function startAutoDrop(){
       piece.y++;
       drawBoard();
     } else {
-      lockPiece();
+      if(normalPhaseActive){
+        normalLockPiece();
+      } else {
+        lockPiece();
+      }
     }
   }, CFG.DROP_MS);
 }
@@ -2854,7 +2865,6 @@ let holdActive   = false;  // 現在速度UP中かどうか
 function startHoldDrop(){
   if(holdActive || phase !== 'move' || paused || !piece) return;
   holdActive = true;
-  // 速度UPで再起動
   stopAutoDrop();
   dropTimer = setInterval(()=>{
     if(paused || phase !== 'move' || !piece){ stopHoldDrop(); return; }
@@ -2862,7 +2872,11 @@ function startHoldDrop(){
       piece.y++;
       drawBoard();
     } else {
-      lockPiece();
+      if(normalPhaseActive){
+        normalLockPiece();
+      } else {
+        lockPiece();
+      }
     }
   }, HOLD_DROP_MS);
   showFeedback('⚡', '#ffee00');
