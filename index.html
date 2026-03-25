@@ -18,7 +18,7 @@
 <meta name="apple-mobile-web-app-title" content="大食いテトリス">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#0e0e18">
+<meta name="theme-color" content="#000000">
 <meta name="description" content="ルーレットでブロックを決めて積み上がりを消す逆テトリスゲーム">
 
 <!-- Apple Touch Icon (inline SVG → Data URI) -->
@@ -33,51 +33,47 @@
 
 :root {
 color-scheme: dark;
-–bg:#05050d; –panel:#16162a; –border:#2a2a50;
-–accent:#ff2d78; –cyan:#00e5ff; –gold:#ffd700;
-–green:#39ff14; –text:#eeeeff; –dim:#55558a;
+–bg:#000000; –panel:#1a1a1a; –border:#333333;
+–accent:#ff1a1a; –cyan:#00ccff; –gold:#ffee00;
+–green:#00ff41; –text:#ffffff; –dim:#888888;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
 
 /* Web公開: ライトモード端末での色反転防止 */
-/* button/input のシステムデフォルトスタイルを完全リセット */
+/* button/input の appearance だけリセット（色は各クラスで上書き） */
 button,input,select,textarea{
 -webkit-appearance:none;
 -moz-appearance:none;
 appearance:none;
-background:transparent;
-border:none;
-color:inherit;
 font:inherit;
 cursor:pointer;
 outline:none;
 }
-html{
-background:#05050d;
-background-color:#05050d;
+html,body{
+width:100%;height:100%;
+background:#000000;
+background-color:#000000;
+color:#ffffff;
+font-family:‘M PLUS Rounded 1c’,sans-serif;
+overflow:hidden;
+touch-action:none;
 }
-body{
-background:#05050d;
-background-color:#05050d;
-color:#eeeeff;
-}
-html,body{width:100%;height:100%;background:var(–bg);color:var(–text);font-family:‘M PLUS Rounded 1c’,sans-serif;overflow:hidden;touch-action:none;}
 
 /* ─── SCREENS ─── */
-.screen{position:fixed;inset:0;display:none;z-index:10;background:var(–bg);}
-.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.screen{position:fixed;inset:0;display:none !important;z-index:10;background:#000000;}
+.screen.active{display:flex !important;flex-direction:column;align-items:center;justify-content:center;}
 
 /* ─── TITLE ─── */
-#titleScreen{gap:20px;padding:28px 20px;background:linear-gradient(160deg,#0e0e18 60%,#1a0a20);}
-.title-logo{font-family:‘Orbitron’,monospace;font-size:2rem;font-weight:900;color:var(–accent);text-shadow:0 0 30px rgba(255,45,120,.7);letter-spacing:.08em;text-align:center;line-height:1.2;}
-.title-logo span{color:var(–gold);}
-.title-sub{font-size:.68rem;color:var(–dim);letter-spacing:.4em;}
-.title-desc{background:var(–panel);border:1px solid var(–border);border-radius:16px;padding:14px 18px;max-width:320px;width:100%;font-size:.72rem;line-height:2;color:var(–dim);text-align:center;}
-.title-desc b{color:var(–text);}
+#titleScreen{gap:20px;padding:28px 20px;background:linear-gradient(160deg,#0a0a0a 60%,#0d0d0d);}
+.title-logo{font-family:‘Orbitron’,monospace;font-size:2rem;font-weight:900;color:#ff1a1a;text-shadow:0 0 30px rgba(255,45,120,.7);letter-spacing:.08em;text-align:center;line-height:1.2;}
+.title-logo span{color:#ffee00;}
+.title-sub{font-size:.68rem;color:#888888;letter-spacing:.4em;}
+.title-desc{background:#1a1a1a;border:1px solid #333333;border-radius:16px;padding:14px 18px;max-width:320px;width:100%;font-size:.72rem;line-height:2;color:#888888;text-align:center;}
+.title-desc b{color:#ffffff;}
 .btn{font-family:‘Orbitron’,monospace;font-size:.85rem;font-weight:700;letter-spacing:.15em;padding:16px 0;width:100%;max-width:280px;border:none;border-radius:50px;cursor:pointer;transition:transform .1s;}
 .btn:active{transform:scale(.96);}
-.btn-p{background:var(–accent);color:#fff;box-shadow:0 0 24px rgba(255,45,120,.5);}
-.btn-s{background:var(–panel);color:var(–dim);border:1px solid var(–border);}
+.btn-p{background:#ff1a1a;color:#fff;box-shadow:0 0 24px rgba(255,45,120,.5);}
+.btn-s{background:#1a1a1a;color:#888888;border:1px solid #333333;}
 
 /* ─── BAN ─── */
 #banScreen{gap:0;padding:0;overflow:hidden;justify-content:flex-start;}
@@ -88,21 +84,21 @@ width:100%;flex-shrink:0;
 display:flex;flex-direction:column;
 gap:7px;
 padding:10px 14px 8px;
-background:var(–panel);
-border-bottom:1px solid var(–border);
+background:#1a1a1a;
+border-bottom:1px solid #333333;
 }
 .ban-section{display:flex;flex-direction:column;gap:4px;}
-.ban-section-label{font-size:.48rem;color:var(–dim);letter-spacing:.2em;text-align:center;}
+.ban-section-label{font-size:.48rem;color:#888888;letter-spacing:.2em;text-align:center;}
 
-.ban-title{font-family:‘Orbitron’,monospace;font-size:.85rem;font-weight:900;color:var(–accent);letter-spacing:.15em;text-align:left;}
-.ban-sub{font-size:.52rem;color:var(–dim);line-height:1.6;}
+.ban-title{font-family:‘Orbitron’,monospace;font-size:.85rem;font-weight:900;color:#ff1a1a;letter-spacing:.15em;text-align:left;}
+.ban-sub{font-size:.52rem;color:#888888;line-height:1.6;}
 .ban-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;}
-.ban-btn{background:var(–panel);border:2px solid var(–border);border-radius:10px;padding:8px 3px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(–text);font-family:‘Orbitron’,monospace;font-size:.62rem;position:relative;}
-.ban-btn.banned{background:rgba(255,45,120,.1);border-color:var(–accent);opacity:.5;}
-.ban-x{display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:1.6rem;border-radius:8px;background:rgba(255,45,120,.2);color:var(–accent);}
+.ban-btn{background:#1a1a1a;border:2px solid #333333;border-radius:10px;padding:8px 3px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:#ffffff;font-family:‘Orbitron’,monospace;font-size:.62rem;position:relative;}
+.ban-btn.banned{background:rgba(255,45,120,.1);border-color:#ff1a1a;opacity:.5;}
+.ban-x{display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:1.6rem;border-radius:8px;background:rgba(255,45,120,.2);color:#ff1a1a;}
 .ban-btn.banned .ban-x{display:flex;}
-.ban-count{font-size:.55rem;color:var(–dim);}
-.ban-count b{font-family:‘Orbitron’,monospace;color:var(–accent);font-size:.82rem;}
+.ban-count{font-size:.55rem;color:#888888;}
+.ban-count b{font-family:‘Orbitron’,monospace;color:#ff1a1a;font-size:.82rem;}
 
 /* 中央: ミニマップ（残りスペースを全部使う） */
 #banMiniSection{
@@ -124,38 +120,38 @@ flex-shrink:0;gap:8px;
 }
 .ban-mini-title{
 font-family:‘Orbitron’,monospace;font-size:.55rem;font-weight:700;
-color:var(–cyan);letter-spacing:.1em;
+color:#00ccff;letter-spacing:.1em;
 }
 .ban-mini-stats{display:flex;align-items:baseline;gap:4px;}
-.ban-mini-val{font-family:‘Orbitron’,monospace;font-size:.9rem;font-weight:700;color:var(–green);}
-.ban-mini-unit{font-size:.4rem;color:var(–dim);}
+.ban-mini-val{font-family:‘Orbitron’,monospace;font-size:.9rem;font-weight:700;color:#00ff41;}
+.ban-mini-unit{font-size:.4rem;color:#888888;}
 #banRegenBtn{
 font-family:‘Orbitron’,monospace;font-size:.5rem;font-weight:700;
 padding:6px 10px;
-background:var(–panel);border:1px solid var(–border);
-border-radius:8px;color:var(–dim);cursor:pointer;
+background:#1a1a1a;border:1px solid #333333;
+border-radius:8px;color:#888888;cursor:pointer;
 white-space:nowrap;
 transition:all .15s;flex-shrink:0;
 }
-#banRegenBtn:active{border-color:var(–cyan);color:var(–cyan);transform:scale(.94);}
+#banRegenBtn:active{border-color:#00ccff;color:#00ccff;transform:scale(.94);}
 
 #banMinimapWrap{
 flex:1;min-height:0;
 position:relative;
-border:2px solid #1a4060;border-radius:10px;
+border:2px solid #2a4a7a;border-radius:10px;
 overflow:hidden;
-background:#060d18;
-box-shadow:0 0 0 1px #0a2040, inset 0 0 20px rgba(0,100,200,.15), 0 0 15px rgba(0,150,255,.1);
+background:#050a14;
+box-shadow:0 0 0 1px #1a2a4a, inset 0 0 20px rgba(40,80,140,.15), 0 0 18px rgba(58,123,213,.3);
 display:flex;align-items:center;justify-content:center;
 }
 #banMinimapCanvas{display:block;image-rendering:pixelated;}
 #banMinimapBar{
 position:absolute;top:0;right:0;bottom:0;width:5px;
-background:rgba(0,50,100,.4);
+background:rgba(30,50,80,.4);
 }
 #banMinimapBarFill{
 position:absolute;bottom:0;left:0;right:0;
-background:linear-gradient(to top,#ff2d78,#ff6b35);
+background:linear-gradient(to top,#ff1a1a,#ff4400);
 transition:height .3s ease;
 box-shadow:0 0 8px rgba(255,45,120,.7);
 }
@@ -167,37 +163,37 @@ display:flex;flex-direction:column;
 align-items:center;
 gap:6px;
 padding:8px 14px 14px;
-background:var(–panel);
-border-top:1px solid var(–border);
+background:#1a1a1a;
+border-top:1px solid #333333;
 }
 
 /* ─── GAME ─── */
 #gameScreen{justify-content:flex-start;padding:0;}
-#hud{width:100%;padding:10px 14px 8px;display:flex;align-items:center;justify-content:space-between;background:var(–panel);border-bottom:2px solid var(–border);flex-shrink:0;}
-.hud-logo{font-family:‘Orbitron’,monospace;font-size:.9rem;font-weight:900;color:var(–accent);text-shadow:0 0 12px rgba(255,45,120,.5);}
+#hud{width:100%;padding:10px 14px 8px;display:flex;align-items:center;justify-content:space-between;background:#1a1a1a;border-bottom:2px solid #333333;flex-shrink:0;}
+.hud-logo{font-family:‘Orbitron’,monospace;font-size:.9rem;font-weight:900;color:#ff1a1a;text-shadow:0 0 12px rgba(255,45,120,.5);}
 .hud-stats{display:flex;gap:18px;}
 .hud-st{text-align:center;}
-.hl{display:block;font-size:.52rem;color:var(–dim);letter-spacing:.18em;}
+.hl{display:block;font-size:.52rem;color:#888888;letter-spacing:.18em;}
 .hv{font-family:‘Orbitron’,monospace;font-size:1.15rem;font-weight:700;}
 
-#gameArea{flex:1;display:flex;flex-direction:row;align-items:stretch;min-height:0;padding:4px 6px 2px;gap:6px;}
+#gameArea{flex:1;display:flex;flex-direction:row;align-items:stretch;min-height:0;padding:4px 6px 2px;gap:6px;background:#0d1117;}
 
 #boardWrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;min-width:0;}
 #gameCanvas{
 display:block;image-rendering:pixelated;touch-action:none;
-border:2px solid #2a2a60;
+border:2px solid #3a7bd5;
 border-radius:4px;
-box-shadow:0 0 0 1px #0a0a18, 0 0 20px rgba(0,0,0,.6);
+box-shadow:0 0 0 1px #1a2a4a, 0 0 18px rgba(58,123,213,.4), 0 0 40px rgba(0,0,0,.8);
 }
 
 /* スワイプ操作ガイド */
 #swipeGuide{
 display:flex;align-items:center;gap:8px;
-font-size:.5rem;color:var(–dim);letter-spacing:.08em;
+font-size:.5rem;color:#888888;letter-spacing:.08em;
 margin-top:5px;opacity:.7;
 font-family:‘M PLUS Rounded 1c’,sans-serif;
 }
-.guide-sep{color:var(–border);}
+.guide-sep{color:#333333;}
 
 /* スワイプ視覚フィードバック */
 #swipeFeedback{
@@ -216,18 +212,19 @@ width:44px;flex-shrink:0;
 display:flex;flex-direction:column;
 align-items:center;gap:4px;
 padding-top:2px;
+background:#0d1117;
 }
 .sb-label{
-font-size:.42rem;color:var(–dim);letter-spacing:.12em;
+font-size:.42rem;color:#888888;letter-spacing:.12em;
 font-family:‘Orbitron’,monospace;
 }
 #minimapWrap{
 position:relative;
-border:1px solid var(–border);
+border:1px solid #2a4a7a;
 border-radius:5px;
 overflow:hidden;
-background:#0a0a12;
-box-shadow:0 0 8px rgba(0,229,255,.1);
+background:#050a14;
+box-shadow:0 0 8px rgba(58,123,213,.2);
 }
 #minimapCanvas{display:block;image-rendering:pixelated;}
 
@@ -238,65 +235,61 @@ background:rgba(255,255,255,.06);
 }
 #minimapBarFill{
 position:absolute;bottom:0;left:0;right:0;
-background:var(–accent);
+background:#ff1a1a;
 transition:height .3s ease;
 box-shadow:0 0 6px rgba(255,45,120,.6);
 }
 .sb-stat{
 font-family:‘Orbitron’,monospace;font-size:.7rem;font-weight:700;
-color:var(–green);text-align:center;line-height:1;
+color:#00ff41;text-align:center;line-height:1;
 }
-.sb-unit{font-size:.4rem;color:var(–dim);display:block;letter-spacing:.1em;}
+.sb-unit{font-size:.4rem;color:#888888;display:block;letter-spacing:.1em;}
 
 #controls{width:100%;padding:5px 10px 10px;display:flex;justify-content:flex-end;flex-shrink:0;}
-.ctrl{background:var(–panel);border:1px solid var(–border);border-radius:12px;color:var(–text);font-size:1.05rem;padding:13px 20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .1s;}
-.ctrl:active,.ctrl.pressed{background:rgba(0,229,255,.15);border-color:var(–cyan);transform:scale(.93);}
-#btnPause{font-size:.58rem;color:var(–dim);letter-spacing:.05em;}
+.ctrl{background:#1a1a1a;border:1px solid #333333;border-radius:12px;color:#ffffff;font-size:1.05rem;padding:13px 20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .1s;}
+.ctrl:active,.ctrl.pressed{background:rgba(0,229,255,.15);border-color:#00ccff;transform:scale(.93);}
+#btnPause{font-size:.58rem;color:#888888;letter-spacing:.05em;}
 
 /* T2: BAN mode selector */
 .ban-mode-btn{
 flex:1;font-family:‘Orbitron’,monospace;font-size:.6rem;font-weight:700;
 letter-spacing:.05em;padding:10px 4px;border-radius:10px;cursor:pointer;
-background:var(–panel);border:2px solid var(–border);color:var(–dim);
+background:#1a1a1a;border:2px solid #333333;color:#888888;
 transition:all .15s;
 }
-.ban-mode-btn.active{background:rgba(255,45,120,.15);border-color:var(–accent);color:var(–accent);}
+.ban-mode-btn.active{background:rgba(255,45,120,.15);border-color:#ff1a1a;color:#ff1a1a;}
 .ban-mode-btn:active{transform:scale(.95);}
 
 /* T4: Difficulty selector */
 .diff-btn{
 flex:1;font-family:‘Orbitron’,monospace;font-size:.55rem;font-weight:700;
 letter-spacing:.03em;padding:9px 4px 8px;border-radius:10px;cursor:pointer;
-background:var(–panel);border:2px solid var(–border);color:var(–dim);
+background:#1a1a1a;border:2px solid #333333;color:#888888;
 transition:all .15s;line-height:1.6;
 }
 .diff-btn span{font-size:.48rem;font-family:‘M PLUS Rounded 1c’,sans-serif;letter-spacing:.05em;}
-.diff-btn.active{background:rgba(0,229,255,.12);border-color:var(–cyan);color:var(–cyan);}
+.diff-btn.active{background:rgba(0,229,255,.12);border-color:#00ccff;color:#00ccff;}
 .diff-btn:active{transform:scale(.95);}
 
 /* チケットB: Win mode selector */
 .win-btn{
 flex:1;font-family:‘Orbitron’,monospace;font-size:.55rem;font-weight:700;
 letter-spacing:.03em;padding:9px 4px 8px;border-radius:10px;cursor:pointer;
-background:var(–panel);border:2px solid var(–border);color:var(–dim);
+background:#1a1a1a;border:2px solid #333333;color:#888888;
 transition:all .15s;line-height:1.6;
 }
 .win-btn span{font-size:.45rem;font-family:‘M PLUS Rounded 1c’,sans-serif;letter-spacing:.04em;}
-.win-btn.active{background:rgba(255,215,0,.12);border-color:var(–gold);color:var(–gold);}
+.win-btn.active{background:rgba(255,215,0,.12);border-color:#ffee00;color:#ffee00;}
 .win-btn:active{transform:scale(.95);}
 
 /* ══════════════════════════════════════
 /* オリエンテーション */
 ══════════════════════════════════════ */
 #orientOverlay{
-position:fixed;inset:0;z-index:80;
-background:var(–bg);
-display:none;
-}
-#orientOverlay.active{
-display:flex;
-flex-direction:column;
-align-items:center;
+z-index:80;
+background:#000000;
+justify-content:flex-start;
+overflow:hidden;
 }
 
 #orientHeader{
@@ -306,14 +299,14 @@ flex-shrink:0;
 }
 #orientTitle{
 font-family:‘Orbitron’,monospace;font-size:.8rem;font-weight:900;
-color:var(–accent);letter-spacing:.15em;
+color:#ff1a1a;letter-spacing:.15em;
 }
 #orientDots{display:flex;gap:8px;align-items:center;}
 .o-dot{
 width:8px;height:8px;border-radius:50%;
-background:var(–border);transition:all .3s;
+background:#333333;transition:all .3s;
 }
-.o-dot.active{background:var(–accent);transform:scale(1.3);}
+.o-dot.active{background:#ff1a1a;transform:scale(1.3);}
 
 #orientSlides{
 flex:1;min-height:0;
@@ -334,21 +327,21 @@ opacity:1;transform:translateX(0);pointer-events:auto;
 opacity:0;transform:translateX(-60px);
 }
 .o-illust{
-border:2px solid var(–border);border-radius:12px;
-background:#0a0a1a;
+border:2px solid #333333;border-radius:12px;
+background:#0d0d0d;
 box-shadow:0 0 20px rgba(0,229,255,.1);
 flex-shrink:0;
 }
 .o-slide-title{
 font-family:‘Orbitron’,monospace;font-size:.85rem;font-weight:900;
-color:var(–cyan);letter-spacing:.1em;text-align:center;
+color:#00ccff;letter-spacing:.1em;text-align:center;
 }
 .o-slide-body{
 font-family:‘M PLUS Rounded 1c’,sans-serif;font-size:.72rem;
-color:var(–text);text-align:center;line-height:1.9;
+color:#ffffff;text-align:center;line-height:1.9;
 }
-.o-slide-body b{color:var(–gold);}
-.o-slide-body .hi{color:var(–cyan);}
+.o-slide-body b{color:#ffee00;}
+.o-slide-body .hi{color:#00ccff;}
 
 #orientFooter{
 width:100%;padding:12px 20px 20px;
@@ -357,14 +350,14 @@ flex-shrink:0;gap:12px;
 }
 #orientPrev{
 font-family:‘Orbitron’,monospace;font-size:.7rem;font-weight:700;
-padding:11px 20px;background:var(–panel);border:1px solid var(–border);
-border-radius:30px;color:var(–dim);cursor:pointer;
+padding:11px 20px;background:#1a1a1a;border:1px solid #333333;
+border-radius:30px;color:#888888;cursor:pointer;
 transition:all .15s;
 }
-#orientPrev:active{border-color:var(–cyan);color:var(–cyan);}
+#orientPrev:active{border-color:#00ccff;color:#00ccff;}
 #orientNext{
 font-family:‘Orbitron’,monospace;font-size:.75rem;font-weight:700;
-padding:13px 30px;background:var(–accent);border:none;
+padding:13px 30px;background:#ff1a1a;border:none;
 border-radius:30px;color:#fff;cursor:pointer;flex:1;
 box-shadow:0 0 16px rgba(255,45,120,.4);
 transition:all .15s;letter-spacing:.1em;
@@ -378,12 +371,12 @@ ITEM_SIZE=88px / GAP=10px / STEP=98px
 ══════════════════════════════════════ */
 #rouletteOverlay{
 position:fixed;inset:0;z-index:200;
-background:rgba(8,8,16,.98);
-display:none;
+background:rgba(0,0,0,.98);
+display:none !important;
 overflow:hidden;
 }
 #rouletteOverlay.active{
-display:flex;
+display:flex !important;
 flex-direction:column;
 align-items:stretch;
 justify-content:flex-start;
@@ -403,32 +396,32 @@ flex-shrink:0;
 }
 .rl-map-title{
 font-family:‘Orbitron’,monospace;font-size:.58rem;font-weight:700;
-color:var(–cyan);letter-spacing:.12em;
+color:#00ccff;letter-spacing:.12em;
 }
 .rl-map-stats{display:flex;align-items:baseline;gap:4px;}
 .rl-map-val{
 font-family:‘Orbitron’,monospace;font-size:1rem;font-weight:700;
-color:var(–green);
+color:#00ff41;
 }
-.rl-map-unit{font-size:.42rem;color:var(–dim);}
+.rl-map-unit{font-size:.42rem;color:#888888;}
 
 #rlMinimapWrap{
 flex:1;min-height:0;
 position:relative;
-border:2px solid #1a4060;border-radius:10px;
+border:2px solid #2a4a7a;border-radius:10px;
 overflow:hidden;
-background:#060d18;
-box-shadow:0 0 0 1px #0a2040, inset 0 0 20px rgba(0,100,200,.15), 0 0 15px rgba(0,150,255,.1);
+background:#050a14;
+box-shadow:0 0 0 1px #1a2a4a, inset 0 0 20px rgba(40,80,140,.15), 0 0 18px rgba(58,123,213,.3);
 display:flex;align-items:center;justify-content:center;
 }
 #rlMinimapCanvas{display:block;image-rendering:pixelated;}
 #rlMinimapBar{
 position:absolute;top:0;right:0;bottom:0;width:5px;
-background:rgba(0,50,100,.4);
+background:rgba(30,50,80,.4);
 }
 #rlMinimapBarFill{
 position:absolute;bottom:0;left:0;right:0;
-background:linear-gradient(to top,#ff2d78,#ff6b35);
+background:linear-gradient(to top,#ff1a1a,#ff4400);
 box-shadow:0 0 8px rgba(255,45,120,.7);
 transition:height .3s ease;
 }
@@ -440,10 +433,10 @@ display:flex;flex-direction:column;
 align-items:center;
 gap:10px;
 padding:10px 14px 18px;
-background:rgba(6,6,20,.95);
-border-top:1px solid var(–border);
+background:rgba(0,0,0,.95);
+border-top:1px solid #333333;
 }
-.rl-ttl{font-family:‘Orbitron’,monospace;font-size:.62rem;letter-spacing:.45em;color:var(–dim);}
+.rl-ttl{font-family:‘Orbitron’,monospace;font-size:.62rem;letter-spacing:.45em;color:#888888;}
 
 /* ドラム全体 */
 .rl-drum-wrap{
@@ -456,20 +449,20 @@ flex-shrink:0;
 .rl-fade-l,.rl-fade-r{
 position:absolute;top:0;bottom:0;width:80px;z-index:3;pointer-events:none;
 }
-.rl-fade-l{left:0;background:linear-gradient(90deg,rgba(8,8,16,1) 0%,transparent 100%);}
-.rl-fade-r{right:0;background:linear-gradient(270deg,rgba(8,8,16,1) 0%,transparent 100%);}
+.rl-fade-l{left:0;background:linear-gradient(90deg,rgba(0,0,0,1) 0%,transparent 100%);}
+.rl-fade-r{right:0;background:linear-gradient(270deg,rgba(0,0,0,1) 0%,transparent 100%);}
 
 .rl-selector{
 position:absolute;top:50%;left:50%;
 transform:translate(-50%,-50%);
 width:88px;height:92px;
-border:2.5px solid var(–accent);border-radius:14px;
+border:2.5px solid #ff1a1a;border-radius:14px;
 z-index:4;pointer-events:none;
 box-shadow:0 0 0 1px rgba(255,45,120,.2),0 0 24px rgba(255,45,120,.6),inset 0 0 12px rgba(255,45,120,.1);
 }
 .rl-selector::before,.rl-selector::after{
 content:’’;position:absolute;left:50%;transform:translateX(-50%);
-width:10px;height:5px;background:var(–accent);border-radius:3px;
+width:10px;height:5px;background:#ff1a1a;border-radius:3px;
 }
 .rl-selector::before{top:-4px;}
 .rl-selector::after{bottom:-4px;}
@@ -479,14 +472,14 @@ width:10px;height:5px;background:var(–accent);border-radius:3px;
 .rl-item{
 width:88px;min-width:88px;max-width:88px;flex:0 0 88px;
 height:92px;
-background:var(–panel);border:2px solid var(–border);border-radius:14px;
+background:#1a1a1a;border:2px solid #333333;border-radius:14px;
 display:flex;flex-direction:column;align-items:center;justify-content:center;
 gap:4px;font-family:‘Orbitron’,monospace;font-size:.65rem;
 user-select:none;
 transition:transform .25s ease, opacity .25s ease, filter .25s ease;
 }
 .rl-item.sel{
-border-color:var(–accent);
+border-color:#ff1a1a;
 background:rgba(255,45,120,.12);
 box-shadow:0 0 0 2px rgba(255,45,120,.3),0 0 28px rgba(255,45,120,.7);
 transform:scale(1.08);
@@ -498,7 +491,7 @@ opacity:0.3;filter:brightness(0.45) saturate(0.3);
 
 .rl-result{
 font-family:‘Orbitron’,monospace;font-size:1.05rem;font-weight:700;
-color:var(–gold);text-shadow:0 0 16px rgba(255,215,0,.7);
+color:#ffee00;text-shadow:0 0 16px rgba(255,215,0,.7);
 min-height:1.5em;text-align:center;letter-spacing:.05em;
 }
 /* FREE時の右上ミニマップ（通常時は非表示） */
@@ -514,29 +507,29 @@ flex-direction:column;align-items:center;gap:4px;
 #rouletteOverlay.free-mode #rlFreeMinimap{display:flex;}
 .rl-fm-label{
 font-family:‘Orbitron’,monospace;font-size:.44rem;
-color:var(–dim);letter-spacing:.12em;
+color:#888888;letter-spacing:.12em;
 }
 #rlFreeMinimapWrap{
 position:relative;
-border:1px solid #1a4060;border-radius:6px;
-overflow:hidden;background:#060d18;
-box-shadow:0 0 10px rgba(0,229,255,.18);
+border:1px solid #2a4a7a;border-radius:6px;
+overflow:hidden;background:#050a14;
+box-shadow:0 0 10px rgba(58,123,213,.3);
 }
 #rlFreeMinimapCanvas{display:block;image-rendering:pixelated;}
 #rlFreeMinimapBar{
 position:absolute;top:0;right:0;bottom:0;width:3px;
-background:rgba(0,50,100,.4);
+background:rgba(30,50,80,.4);
 }
 #rlFreeMinimapBarFill{
 position:absolute;bottom:0;left:0;right:0;
-background:linear-gradient(to top,#ff2d78,#ff6b35);
+background:linear-gradient(to top,#ff1a1a,#ff4400);
 box-shadow:0 0 6px rgba(255,45,120,.7);
 }
 .rl-fm-stat{
 font-family:‘Orbitron’,monospace;font-size:.72rem;font-weight:700;
-color:var(–green);text-align:center;line-height:1;
+color:#00ff41;text-align:center;line-height:1;
 }
-.rl-fm-unit{font-size:.38rem;color:var(–dim);}
+.rl-fm-unit{font-size:.38rem;color:#888888;}
 
 /* FREE時: 大ミニマップを非表示にして rlBottom が全体を使う */
 #rouletteOverlay.free-mode #rlMapSection{display:none;}
@@ -549,25 +542,25 @@ position:relative;
 #pieceSel{display:none;width:100%;}
 #pieceSel.active{display:flex;flex-direction:column;align-items:center;gap:8px;}
 #pieceSel.active{display:flex;}
-.ps-lbl{font-size:.58rem;color:var(–dim);letter-spacing:.2em;}
+.ps-lbl{font-size:.58rem;color:#888888;letter-spacing:.2em;}
 .ps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;width:100%;max-width:300px;}
-.ps-btn{background:var(–panel);border:1px solid var(–border);border-radius:10px;padding:7px 3px 5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(–text);font-family:‘Orbitron’,monospace;font-size:.6rem;}
+.ps-btn{background:#1a1a1a;border:1px solid #333333;border-radius:10px;padding:7px 3px 5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:#ffffff;font-family:‘Orbitron’,monospace;font-size:.6rem;}
 .ps-btn:active{transform:scale(.92);}
 
-#spinBtn{font-family:‘Orbitron’,monospace;font-size:.82rem;font-weight:700;letter-spacing:.2em;padding:15px 52px;background:var(–accent);border:none;border-radius:50px;color:#fff;cursor:pointer;box-shadow:0 0 22px rgba(255,45,120,.5);transition:transform .1s;}
+#spinBtn{font-family:‘Orbitron’,monospace;font-size:.82rem;font-weight:700;letter-spacing:.2em;padding:15px 52px;background:#ff1a1a;border:none;border-radius:50px;color:#fff;cursor:pointer;box-shadow:0 0 22px rgba(255,45,120,.5);transition:transform .1s;}
 #spinBtn:active{transform:scale(.95);}
 #spinBtn:disabled{opacity:.3;}
 
 /* ─── RESULT ─── */
 #resultScreen{gap:14px;padding:30px 22px;}
 .res-title{font-family:‘Orbitron’,monospace;font-size:1.7rem;font-weight:900;text-align:center;}
-.res-win{color:var(–gold);text-shadow:0 0 28px rgba(255,215,0,.6);}
-.res-lose{color:var(–accent);text-shadow:0 0 28px rgba(255,45,120,.6);}
+.res-win{color:#ffee00;text-shadow:0 0 28px rgba(255,215,0,.6);}
+.res-lose{color:#ff1a1a;text-shadow:0 0 28px rgba(255,45,120,.6);}
 .res-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:300px;}
-.res-card{background:var(–panel);border:1px solid var(–border);border-radius:14px;padding:11px 7px;text-align:center;}
-.rc-lbl{display:block;font-size:.48rem;color:var(–dim);letter-spacing:.2em;margin-bottom:3px;}
+.res-card{background:#1a1a1a;border:1px solid #333333;border-radius:14px;padding:11px 7px;text-align:center;}
+.rc-lbl{display:block;font-size:.48rem;color:#888888;letter-spacing:.2em;margin-bottom:3px;}
 .rc-val{font-family:‘Orbitron’,monospace;font-size:1.15rem;font-weight:700;}
-.res-sub{font-size:.62rem;color:var(–dim);text-align:center;line-height:1.8;}
+.res-sub{font-size:.62rem;color:#888888;text-align:center;line-height:1.8;}
 
 /* ─── FLASH ─── */
 #lineFlash{position:fixed;inset:0;z-index:80;background:rgba(57,255,20,.13);pointer-events:none;display:none;}
@@ -576,27 +569,27 @@ position:relative;
 
 /* ─── TITLE BAN MODE ─── */
 .title-ban-wrap{width:100%;max-width:320px;display:flex;flex-direction:column;gap:8px;}
-.title-ban-label{font-size:.58rem;color:var(–dim);letter-spacing:.25em;text-align:center;}
+.title-ban-label{font-size:.58rem;color:#888888;letter-spacing:.25em;text-align:center;}
 .title-ban-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .title-mode-btn{
-background:var(–panel);border:2px solid var(–border);border-radius:14px;
+background:#1a1a1a;border:2px solid #333333;border-radius:14px;
 padding:12px 8px 10px;cursor:pointer;
 display:flex;flex-direction:column;align-items:center;gap:4px;
 transition:all .15s;-webkit-tap-highlight-color:transparent;
 }
 .title-mode-btn:active{transform:scale(.94);}
 .title-mode-btn.active{
-background:rgba(255,45,120,.12);border-color:var(–accent);
+background:rgba(255,45,120,.12);border-color:#ff1a1a;
 box-shadow:0 0 16px rgba(255,45,120,.25);
 }
 .tmb-icon{font-size:1.4rem;line-height:1;}
 .tmb-name{
 font-family:‘Orbitron’,monospace;font-size:.62rem;font-weight:700;
-color:var(–dim);letter-spacing:.05em;
+color:#888888;letter-spacing:.05em;
 }
-.title-mode-btn.active .tmb-name{color:var(–accent);}
+.title-mode-btn.active .tmb-name{color:#ff1a1a;}
 .tmb-desc{
-font-size:.52rem;color:var(–dim);text-align:center;line-height:1.6;
+font-size:.52rem;color:#888888;text-align:center;line-height:1.6;
 }
 
 /* ─── BAN SCREEN MODE INDICATOR ─── */
@@ -604,43 +597,43 @@ font-size:.52rem;color:var(–dim);text-align:center;line-height:1.6;
 display:flex;align-items:center;gap:7px;
 background:rgba(255,45,120,.08);border:1px solid rgba(255,45,120,.3);
 border-radius:20px;padding:5px 14px;
-font-size:.6rem;color:var(–accent);
+font-size:.6rem;color:#ff1a1a;
 font-family:‘Orbitron’,monospace;letter-spacing:.1em;
 }
 .ban-mode-indicator span:first-child{font-size:.9rem;}
 
 /* ─── GAME MODE SELECTOR (タイトル) ─── */
 .gmode-wrap{width:100%;max-width:320px;display:flex;flex-direction:column;gap:8px;}
-.gmode-label{font-size:.52rem;color:var(–dim);letter-spacing:.22em;text-align:center;font-family:‘Orbitron’,monospace;}
+.gmode-label{font-size:.52rem;color:#888888;letter-spacing:.22em;text-align:center;font-family:‘Orbitron’,monospace;}
 .gmode-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .gmode-btn{
 font-family:‘Orbitron’,monospace;font-size:.55rem;font-weight:700;
 letter-spacing:.04em;padding:12px 6px 10px;border-radius:12px;cursor:pointer;
-background:var(–panel);border:2px solid var(–border);color:var(–dim);
+background:#1a1a1a;border:2px solid #333333;color:#888888;
 transition:all .15s;line-height:1.6;display:flex;flex-direction:column;align-items:center;gap:4px;
 }
 .gmode-btn span.gmode-icon{font-size:1.4rem;line-height:1;}
-.gmode-btn span.gmode-name{font-size:.6rem;color:var(–dim);}
-.gmode-btn span.gmode-desc{font-size:.48rem;color:#44445a;font-family:‘M PLUS Rounded 1c’,sans-serif;letter-spacing:.04em;line-height:1.5;text-align:center;}
-.gmode-btn.active{background:rgba(0,229,255,.1);border-color:var(–cyan);}
-.gmode-btn.active .gmode-name{color:var(–cyan);}
+.gmode-btn span.gmode-name{font-size:.6rem;color:#888888;}
+.gmode-btn span.gmode-desc{font-size:.48rem;color:#444444;font-family:‘M PLUS Rounded 1c’,sans-serif;letter-spacing:.04em;line-height:1.5;text-align:center;}
+.gmode-btn.active{background:rgba(0,229,255,.1);border-color:#00ccff;}
+.gmode-btn.active .gmode-name{color:#00ccff;}
 .gmode-btn:active{transform:scale(.95);}
 
 /* ─── 遷移演出オーバーレイ ─── */
 #transitionOverlay{
 position:fixed;inset:0;z-index:60;
-background:#0e0e18;
-display:none;
+background:#0a0a0a;
+display:none !important;
 padding:24px;
 }
-#transitionOverlay.active{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
-.tr-gameover{font-family:‘Orbitron’,monospace;font-size:1.8rem;font-weight:900;color:var(–accent);letter-spacing:.1em;text-shadow:0 0 30px rgba(255,45,120,.8);}
-.tr-arrow{font-size:2rem;animation:pulse 1s infinite;color:var(–gold);}
-.tr-next{font-family:‘Orbitron’,monospace;font-size:.8rem;font-weight:700;color:var(–cyan);letter-spacing:.1em;text-align:center;line-height:1.8;}
-.tr-mini{border:1px solid var(–border);border-radius:8px;overflow:hidden;background:#0a0a12;box-shadow:0 0 20px rgba(0,229,255,.2);}
+#transitionOverlay.active{display:flex !important;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+.tr-gameover{font-family:‘Orbitron’,monospace;font-size:1.8rem;font-weight:900;color:#ff1a1a;letter-spacing:.1em;text-shadow:0 0 30px rgba(255,45,120,.8);}
+.tr-arrow{font-size:2rem;animation:pulse 1s infinite;color:#ffee00;}
+.tr-next{font-family:‘Orbitron’,monospace;font-size:.8rem;font-weight:700;color:#00ccff;letter-spacing:.1em;text-align:center;line-height:1.8;}
+.tr-mini{border:1px solid #333333;border-radius:8px;overflow:hidden;background:#0d0d0d;box-shadow:0 0 20px rgba(0,229,255,.2);}
 .tr-countdown{
 font-family:‘Orbitron’,monospace;font-size:3rem;font-weight:900;
-color:var(–gold);text-shadow:0 0 30px rgba(255,215,0,.8);
+color:#ffee00;text-shadow:0 0 30px rgba(255,215,0,.8);
 transition:transform .2s ease;
 min-width:80px;text-align:center;
 }
@@ -687,7 +680,7 @@ min-width:80px;text-align:center;
 
 <!-- オリエンテーション（初回チュートリアル） -->
 
-<div id="orientOverlay">
+<div class="screen" id="orientOverlay">
   <div id="orientHeader">
     <div id="orientTitle">大食いテトリス　遊び方</div>
     <div id="orientDots"></div>
@@ -954,10 +947,10 @@ const PNAMES = Object.keys(PIECES);
 const ALL_SEGS = [
   {type:'piece',name:'I',label:'I',    color:'#ff5555'},
   {type:'piece',name:'O',label:'O',    color:'#ff9900'},
-  {type:'free',            label:'FREE',color:'#ffd700'},
+  {type:'free',            label:'FREE',color:'#ffee00'},
   {type:'piece',name:'T',label:'T',    color:'#ffdd00'},
   {type:'piece',name:'S',label:'S',    color:'#44ee55'},
-  {type:'joker',           label:'JOKER',color:'#ff2d78'},
+  {type:'joker',           label:'JOKER',color:'#ff1a1a'},
   {type:'piece',name:'Z',label:'Z',    color:'#4499ff'},
   {type:'piece',name:'J',label:'J',    color:'#ff55ff'},
   {type:'piece',name:'L',label:'L',    color:'#55ffff'},
@@ -1384,55 +1377,10 @@ function selectGameMode(mode){
 //  オリエンテーション（チュートリアル）
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-const ORIENT_SLIDES = [
-  {
-    title: '🍽️ 大食いテトリスとは？',
-    body: `通常テトリスとは<b>逆</b>！<br>
-最初から積み上がった盤面を<br>
-ブロックを落として<b>ラインを消す</b>ゲームです。<br><br>
-<span class="hi">全消し or 最下段まで到達</span>でクリア！`,
-    draw: drawOrient0,
-  },
-  {
-    title: '🎰 ルーレットでブロック決定',
-    body: `毎ターン<b>ルーレット</b>を回して<br>
-使うブロックが決まります。<br><br>
-<b>FREE</b>：好きなブロックを選べる<br>
-<b>JOKER</b>：このターンは何も起きない`,
-    draw: drawOrient1,
-  },
-  {
-    title: '🚫 BANで不要なブロックを除外',
-    body: `ルーレット前に<b>BAN</b>を選択できます。<br>
-邪魔なブロックをタップして除外！<br><br>
-ただし<span class="hi">1BAN = +1ターン</span>のペナルティ。<br>
-使いすぎに注意しよう。`,
-    draw: drawOrient2,
-  },
-  {
-    title: '👆 操作方法',
-    body: `<b>左右スワイプ</b>　→　ブロック移動<br>
-<b>タップ</b>　→　ブロック回転<br>
-<b>下スワイプ</b>　→　即着地<br>
-<b>長押し</b>　→　⚡ 高速落下`,
-    draw: drawOrient3,
-  },
-  {
-    title: '🏆 勝利条件',
-    body: `以下のどれかを達成するとクリア！<br><br>
-<b>全消し</b>　盤面を完全に空にする<br>
-<b>最下段到達</b>　ブロックが一番下の段だけに<br><br>
-<span class="hi">少ないターン数</span>ほど高スコア！`,
-    draw: drawOrient4,
-  },
-];
-
-let orientIdx = 0;
-
 function showHelp(){
   orientIdx = 0;
   buildOrientSlides();
-  document.getElementById('orientOverlay').classList.add('active');
+  showScreen('orientOverlay');
   updateOrient(0);
 }
 
@@ -1501,7 +1449,7 @@ function orientMove(dir){
   const next = orientIdx + dir;
   if(next >= ORIENT_SLIDES.length){
     // 完了 → タイトルへ戻る
-    document.getElementById('orientOverlay').classList.remove('active');
+    showScreen('titleScreen');
     return;
   }
   if(next < 0) return;
@@ -1515,10 +1463,10 @@ function orientMove(dir){
 function drawOrient0(cv){
   const cx = cv.getContext('2d');
   const W = cv.width, H = cv.height;
-  cx.fillStyle='#060d18'; cx.fillRect(0,0,W,H);
+  cx.fillStyle='#0a0a0a'; cx.fillRect(0,0,W,H);
   const cs=14, cols=10, startX=(W-cols*cs)/2;
   // グリッド
-  cx.strokeStyle='rgba(20,60,120,.6)'; cx.lineWidth=.5;
+  cx.strokeStyle='rgba(40,40,40,.6)'; cx.lineWidth=.5;
   for(let r=0;r<=8;r++){cx.beginPath();cx.moveTo(startX,20+r*cs);cx.lineTo(startX+cols*cs,20+r*cs);cx.stroke();}
   for(let c=0;c<=cols;c++){cx.beginPath();cx.moveTo(startX+c*cs,20);cx.lineTo(startX+c*cs,20+8*cs);cx.stroke();}
   // ブロック（下5行に積み上がり）
@@ -1538,7 +1486,7 @@ function drawOrient0(cv){
     cx.fillRect(startX+c*cs+1,(20+(r+3)*cs)+1,cs-2,3);
   }));
   // 矢印「消す！」
-  cx.fillStyle='#00e5ff'; cx.font='bold 11px monospace';
+  cx.fillStyle='#00ccff'; cx.font='bold 11px monospace';
   cx.textAlign='center'; cx.fillText('▼ ラインを消す！',W/2,18);
 }
 
@@ -1546,7 +1494,7 @@ function drawOrient0(cv){
 function drawOrient1(cv){
   const cx = cv.getContext('2d');
   const W = cv.width, H = cv.height;
-  cx.fillStyle='#060d18'; cx.fillRect(0,0,W,H);
+  cx.fillStyle='#0a0a0a'; cx.fillRect(0,0,W,H);
   const items=[
     {label:'I',color:'#ff5555',shape:[[1,1,1,1]]},
     {label:'T',color:'#ffdd00',shape:[[0,1,0],[1,1,1]]},
@@ -1558,8 +1506,8 @@ function drawOrient1(cv){
     const x=startX+i*(iw+gap), y=(H-ih)/2;
     const isCenter=(i===1);
     // 枠
-    cx.fillStyle=isCenter?'rgba(255,45,120,.15)':'#16162a';
-    cx.strokeStyle=isCenter?'#ff2d78':'#2a2a50';
+    cx.fillStyle=isCenter?'rgba(255,45,120,.15)':'#1a1a1a';
+    cx.strokeStyle=isCenter?'#ff1a1a':'#333333';
     cx.lineWidth=isCenter?2.5:1.5;
     roundRect(cx,x,y,iw,ih,8);cx.fill();cx.stroke();
     // ミニピース描画
@@ -1576,11 +1524,11 @@ function drawOrient1(cv){
     cx.textAlign='center'; cx.fillText(item.label,x+iw/2,y+ih-6);
     // 中央に選択枠
     if(isCenter){
-      cx.strokeStyle='#ff2d78'; cx.lineWidth=2;
+      cx.strokeStyle='#ff1a1a'; cx.lineWidth=2;
       roundRect(cx,x-2,y-2,iw+4,ih+4,10); cx.stroke();
     }
   });
-  cx.fillStyle='#ffd700'; cx.font='bold 11px monospace';
+  cx.fillStyle='#ffee00'; cx.font='bold 11px monospace';
   cx.textAlign='center'; cx.fillText('🎰 SPINしてブロック決定！',W/2,H-10);
 }
 
@@ -1588,7 +1536,7 @@ function drawOrient1(cv){
 function drawOrient2(cv){
   const cx = cv.getContext('2d');
   const W = cv.width, H = cv.height;
-  cx.fillStyle='#060d18'; cx.fillRect(0,0,W,H);
+  cx.fillStyle='#0a0a0a'; cx.fillRect(0,0,W,H);
   const items=[
     {label:'I',color:'#ff5555',banned:true},
     {label:'S',color:'#44ee55',banned:false},
@@ -1599,8 +1547,8 @@ function drawOrient2(cv){
   const startX=(W-items.length*(iw+gap)+gap)/2;
   items.forEach((item,i)=>{
     const x=startX+i*(iw+gap), y=H/2-ih/2-10;
-    cx.fillStyle=item.banned?'rgba(255,45,120,.1)':'#16162a';
-    cx.strokeStyle=item.banned?'#ff2d78':'#2a2a50';
+    cx.fillStyle=item.banned?'rgba(255,45,120,.1)':'#1a1a1a';
+    cx.strokeStyle=item.banned?'#ff1a1a':'#333333';
     cx.lineWidth=1.5;
     roundRect(cx,x,y,iw,ih,7);cx.fill();cx.stroke();
     cx.fillStyle=item.color; cx.font='bold 14px Orbitron,monospace';
@@ -1608,11 +1556,11 @@ function drawOrient2(cv){
     if(item.banned){
       cx.fillStyle='rgba(255,45,120,.3)';
       roundRect(cx,x,y,iw,ih,7);cx.fill();
-      cx.fillStyle='#ff2d78'; cx.font='bold 18px sans-serif';
+      cx.fillStyle='#ff1a1a'; cx.font='bold 18px sans-serif';
       cx.textAlign='center'; cx.fillText('✕',x+iw/2,y+ih/2+6);
     }
   });
-  cx.fillStyle='#ff2d78'; cx.font='bold 10px monospace';
+  cx.fillStyle='#ff1a1a'; cx.font='bold 10px monospace';
   cx.textAlign='center'; cx.fillText('BANしたブロックはルーレットから除外',W/2,H-28);
   cx.fillStyle='#ffdd00'; cx.font='10px monospace';
   cx.fillText('⚠ 1BAN = +1ターンのペナルティ',W/2,H-12);
@@ -1622,18 +1570,18 @@ function drawOrient2(cv){
 function drawOrient3(cv){
   const cx = cv.getContext('2d');
   const W = cv.width, H = cv.height;
-  cx.fillStyle='#060d18'; cx.fillRect(0,0,W,H);
+  cx.fillStyle='#0a0a0a'; cx.fillRect(0,0,W,H);
   const ops=[
-    {icon:'◀  ▶',label:'スワイプ移動',color:'#00e5ff'},
-    {icon:'👆',   label:'タップ回転',  color:'#ffd700'},
+    {icon:'◀  ▶',label:'スワイプ移動',color:'#00ccff'},
+    {icon:'👆',   label:'タップ回転',  color:'#ffee00'},
     {icon:'⬇',   label:'下スワイプ即着地',color:'#ff5555'},
-    {icon:'✋',   label:'長押し高速落下',color:'#39ff14'},
+    {icon:'✋',   label:'長押し高速落下',color:'#00ff41'},
   ];
   const rowH=34, startY=(H-ops.length*rowH)/2;
   ops.forEach((op,i)=>{
     const y=startY+i*rowH;
     // アイコン背景
-    cx.fillStyle='#16162a'; cx.strokeStyle='#2a2a50'; cx.lineWidth=1;
+    cx.fillStyle='#1a1a1a'; cx.strokeStyle='#333333'; cx.lineWidth=1;
     roundRect(cx,10,y,50,28,6); cx.fill(); cx.stroke();
     cx.fillStyle=op.color; cx.font='bold 13px sans-serif';
     cx.textAlign='center'; cx.fillText(op.icon,35,y+19);
@@ -1647,10 +1595,10 @@ function drawOrient3(cv){
 function drawOrient4(cv){
   const cx = cv.getContext('2d');
   const W = cv.width, H = cv.height;
-  cx.fillStyle='#060d18'; cx.fillRect(0,0,W,H);
+  cx.fillStyle='#0a0a0a'; cx.fillRect(0,0,W,H);
   const cs=10, cols=10, startX=(W-cols*cs)/2;
   // 空盤面（全消しイメージ）
-  cx.strokeStyle='rgba(20,60,120,.6)'; cx.lineWidth=.5;
+  cx.strokeStyle='rgba(40,40,40,.6)'; cx.lineWidth=.5;
   for(let r=0;r<=6;r++){cx.beginPath();cx.moveTo(startX,15+r*cs);cx.lineTo(startX+cols*cs,15+r*cs);cx.stroke();}
   for(let c=0;c<=cols;c++){cx.beginPath();cx.moveTo(startX+c*cs,15);cx.lineTo(startX+c*cs,15+6*cs);cx.stroke();}
   // 最下段だけブロック
@@ -1660,9 +1608,9 @@ function drawOrient4(cv){
     cx.fillRect(startX+c*cs+1,15+5*cs+1,cs-2,cs-2);
   }
   // クリアテキスト
-  cx.fillStyle='#ffd700'; cx.font='bold 13px Orbitron,monospace';
+  cx.fillStyle='#ffee00'; cx.font='bold 13px Orbitron,monospace';
   cx.textAlign='center'; cx.fillText('🏆 CLEAR!',W/2,H/2+10);
-  cx.fillStyle='#00e5ff'; cx.font='10px monospace';
+  cx.fillStyle='#00ccff'; cx.font='10px monospace';
   cx.fillText('最下段のみ残った状態でクリア',W/2,H-20);
   cx.fillText('全消し or 最下段到達 が目標！',W/2,H-6);
 }
@@ -1677,6 +1625,51 @@ function roundRect(ctx,x,y,w,h,r){
   ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
   ctx.closePath();
 }
+
+const ORIENT_SLIDES = [
+  {
+    title: '🍽️ 大食いテトリスとは？',
+    body: `通常テトリスとは<b>逆</b>！<br>
+最初から積み上がった盤面を<br>
+ブロックを落として<b>ラインを消す</b>ゲームです。<br><br>
+<span class="hi">全消し or 最下段まで到達</span>でクリア！`,
+    draw: drawOrient0,
+  },
+  {
+    title: '🎰 ルーレットでブロック決定',
+    body: `毎ターン<b>ルーレット</b>を回して<br>
+使うブロックが決まります。<br><br>
+<b>FREE</b>：好きなブロックを選べる<br>
+<b>JOKER</b>：このターンは何も起きない`,
+    draw: drawOrient1,
+  },
+  {
+    title: '🚫 BANで不要なブロックを除外',
+    body: `ルーレット前に<b>BAN</b>を選択できます。<br>
+邪魔なブロックをタップして除外！<br><br>
+ただし<span class="hi">1BAN = +1ターン</span>のペナルティ。<br>
+使いすぎに注意しよう。`,
+    draw: drawOrient2,
+  },
+  {
+    title: '👆 操作方法',
+    body: `<b>左右スワイプ</b>　→　ブロック移動<br>
+<b>タップ</b>　→　ブロック回転<br>
+<b>下スワイプ</b>　→　即着地<br>
+<b>長押し</b>　→　⚡ 高速落下`,
+    draw: drawOrient3,
+  },
+  {
+    title: '🏆 勝利条件',
+    body: `以下のどれかを達成するとクリア！<br><br>
+<b>全消し</b>　盤面を完全に空にする<br>
+<b>最下段到達</b>　ブロックが一番下の段だけに<br><br>
+<span class="hi">少ないターン数</span>ほど高スコア！`,
+    draw: drawOrient4,
+  },
+];
+
+let orientIdx = 0;
 
 function startGame(){
   showScreen('gameScreen');
@@ -1694,7 +1687,7 @@ function startGame(){
       previewBoard = null;
       updateHUD();drawBoard();drawMini(null);
       updateGoalDisplay();
-      document.getElementById('phaseVal').style.color = 'var(--cyan)';
+      document.getElementById('phaseVal').style.color = '#00ccff';
       setPhase('roulette');
       beginTurn();
     }
@@ -1713,7 +1706,7 @@ function startNormalPhase(){
 
   // HUD文言・ロゴ切替
   document.getElementById('hudLogo').textContent = '🎮 NORMAL MODE';
-  document.getElementById('phaseVal').style.color = 'var(--green)';
+  document.getElementById('phaseVal').style.color = '#00ff41';
   document.getElementById('phaseVal').textContent = '🎮 通常テトリス中';
   document.getElementById('phaseGoal').textContent = '積め！';
 
@@ -1789,7 +1782,7 @@ function normalLockPiece(){
     const bonusLabels = ['','SINGLE','DOUBLE','TRIPLE','TETRIS!!'];
     showFeedback(
       (bonusLabels[n] || n+'LINE') + '  +' + (CFG.SCORE_TABLE[n]||0),
-      n >= 4 ? 'var(--gold)' : n >= 3 ? 'var(--cyan)' : 'var(--green)'
+      n >= 4 ? '#ffee00' : n >= 3 ? '#00ccff' : '#00ff41'
     );
   }
 
@@ -1841,12 +1834,12 @@ function showTransitionOverlay(b){
       setTimeout(()=>{ countEl.style.transform = 'scale(1)'; }, 200);
     } else {
       countEl.textContent = 'START!';
-      countEl.style.color = 'var(--cyan)';
+      countEl.style.color = '#00ccff';
       clearInterval(tick);
       setTimeout(()=>{
         ov.classList.remove('active');
         // カウントを元に戻す
-        countEl.style.color = 'var(--gold)';
+        countEl.style.color = '#ffee00';
         startReversePhase();
       }, 800);
     }
@@ -1878,7 +1871,7 @@ function startReversePhase(){
 
   // HUD文言・ロゴ復元
   document.getElementById('hudLogo').textContent = '🍽️ 大食いテトリス';
-  document.getElementById('phaseVal').style.color = 'var(--accent)';
+  document.getElementById('phaseVal').style.color = '#ff1a1a';
   document.getElementById('phaseVal').textContent = '🎰 GAMEOVER REVERSE';
 
   updateHUD(); drawBoard(); drawMini(null);
@@ -1963,7 +1956,7 @@ function showPerTurnBan(){
   // overflow:hidden で絶対にスクロールさせない
   ov.style.cssText = [
     'position:fixed;inset:0;z-index:100;',
-    'background:rgba(8,8,16,.97);',
+    'background:rgba(0,0,0,.97);',
     'display:flex;flex-direction:column;align-items:center;justify-content:space-between;',
     'padding:10px 14px;gap:6px;overflow:hidden;',
     'box-sizing:border-box;',
@@ -1972,12 +1965,12 @@ function showPerTurnBan(){
 
   // ── タイトル ──
   const ttl = document.createElement('div');
-  ttl.style.cssText = 'font-family:"Orbitron",monospace;font-size:.82rem;font-weight:900;color:#ff2d78;letter-spacing:.2em;flex-shrink:0;';
+  ttl.style.cssText = 'font-family:"Orbitron",monospace;font-size:.82rem;font-weight:900;color:#ff1a1a;letter-spacing:.2em;flex-shrink:0;';
   ttl.textContent = '🚫 このターンのBAN';
   ov.appendChild(ttl);
 
   const sub = document.createElement('div');
-  sub.style.cssText = 'font-size:.5rem;color:#55558a;text-align:center;line-height:1.5;flex-shrink:0;';
+  sub.style.cssText = 'font-size:.5rem;color:#888888;text-align:center;line-height:1.5;flex-shrink:0;';
   sub.textContent = 'このターンだけ除外したい項目をタップ（次ターンにはリセット）';
   ov.appendChild(sub);
 
@@ -1988,7 +1981,7 @@ function showPerTurnBan(){
   ALL_SEGS.forEach(seg=>{
     const key = segKey(seg);
     const btn = document.createElement('button');
-    btn.style.cssText = 'background:var(--panel);border:2px solid var(--border);border-radius:10px;padding:6px 3px 5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;color:#eeeeff;font-family:"Orbitron",monospace;font-size:.6rem;position:relative;';
+    btn.style.cssText = 'background:#1a1a1a;border:2px solid #333333;border-radius:10px;padding:6px 3px 5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;color:#ffffff;font-family:"Orbitron",monospace;font-size:.6rem;position:relative;';
 
     if(seg.type==='piece'){
       const cv=document.createElement('canvas');cv.width=46;cv.height=28;
@@ -2000,13 +1993,13 @@ function showPerTurnBan(){
     }
     const lbl=document.createElement('span');lbl.textContent=seg.label;lbl.style.color=seg.color;btn.appendChild(lbl);
     const xd=document.createElement('div');
-    xd.style.cssText='display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:1.5rem;border-radius:8px;background:rgba(255,45,120,.22);color:#ff2d78;';
+    xd.style.cssText='display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:1.5rem;border-radius:8px;background:rgba(255,45,120,.22);color:#ff1a1a;';
     xd.textContent='✕';btn.appendChild(xd);
 
     const refresh=()=>{
       const banned=perTurnBanned.has(key);
-      btn.style.background=banned?'rgba(255,45,120,.1)':'var(--panel)';
-      btn.style.borderColor=banned?'var(--accent)':'var(--border)';
+      btn.style.background=banned?'rgba(255,45,120,.1)':'#1a1a1a';
+      btn.style.borderColor=banned?'#ff1a1a':'#333333';
       btn.style.opacity=banned?'.5':'1';
       xd.style.display=banned?'flex':'none';
     };
@@ -2039,7 +2032,7 @@ function showPerTurnBan(){
   const mmInfo = document.createElement('div');
   mmInfo.style.cssText = [
     'display:flex;align-items:center;justify-content:space-between;',
-    'background:#0d1a2e;border:1px solid #1a3a5c;border-radius:8px;',
+    'background:#111111;border:1px solid #333333;border-radius:8px;',
     'padding:6px 10px;flex-shrink:0;',
   ].join('');
 
@@ -2059,7 +2052,7 @@ function showPerTurnBan(){
   mmStats.appendChild(mmRemain);
 
   const mmLinesEl = document.createElement('div');
-  mmLinesEl.style.cssText = 'font-family:"Orbitron",monospace;font-size:.88rem;font-weight:700;color:#00e5ff;line-height:1;';
+  mmLinesEl.style.cssText = 'font-family:"Orbitron",monospace;font-size:.88rem;font-weight:700;color:#00ccff;line-height:1;';
   mmLinesEl.innerHTML = `${lines??0}<span style="font-size:.42rem;color:#4488aa;margin-left:2px;">L消去</span>`;
   mmStats.appendChild(mmLinesEl);
 
@@ -2070,10 +2063,10 @@ function showPerTurnBan(){
   const mmWrap = document.createElement('div');
   mmWrap.style.cssText = [
     'flex:1;min-height:0;position:relative;',
-    'border:2px solid #1a4060;border-radius:8px;',
+    'border:2px solid #333333;border-radius:8px;',
     'overflow:hidden;',
-    'background:#060d18;',
-    'box-shadow:0 0 0 1px #0a2040, inset 0 0 20px rgba(0,100,200,.15), 0 0 15px rgba(0,150,255,.1);',
+    'background:#0a0a0a;',
+    'box-shadow:0 0 0 1px #111111, inset 0 0 20px rgba(50,50,50,.15), 0 0 15px rgba(0,200,255,.1);',
     'display:flex;align-items:center;justify-content:center;', // 中央配置
   ].join('');
 
@@ -2084,12 +2077,12 @@ function showPerTurnBan(){
 
   // 残り段数ゲージバー（右端・シアン系に変更）
   const mmBar = document.createElement('div');
-  mmBar.style.cssText = 'position:absolute;top:0;right:0;bottom:0;width:5px;background:rgba(0,50,100,.4);';
+  mmBar.style.cssText = 'position:absolute;top:0;right:0;bottom:0;width:5px;background:rgba(30,30,30,.4);';
   const mmFill = document.createElement('div');
   mmFill.id = 'perTurnMmFill';
   mmFill.style.cssText = [
     'position:absolute;bottom:0;left:0;right:0;',
-    'background:linear-gradient(to top, #ff2d78, #ff6b35);',
+    'background:linear-gradient(to top, #ff1a1a, #ff4400);',
     'box-shadow:0 0 8px rgba(255,45,120,.7);',
     'transition:height .3s ease;',
   ].join('');
@@ -2101,7 +2094,7 @@ function showPerTurnBan(){
 
   // ── ルーレットへボタン ──
   const okBtn = document.createElement('button');
-  okBtn.style.cssText = 'font-family:"Orbitron",monospace;font-size:.8rem;font-weight:700;letter-spacing:.2em;padding:13px 0;width:100%;max-width:320px;background:#ff2d78;border:none;border-radius:50px;color:#fff;cursor:pointer;box-shadow:0 0 18px rgba(255,45,120,.5);flex-shrink:0;';
+  okBtn.style.cssText = 'font-family:"Orbitron",monospace;font-size:.8rem;font-weight:700;letter-spacing:.2em;padding:13px 0;width:100%;max-width:320px;background:#ff1a1a;border:none;border-radius:50px;color:#fff;cursor:pointer;box-shadow:0 0 18px rgba(255,45,120,.5);flex-shrink:0;';
   okBtn.textContent = '🎰 ルーレットへ';
   const proceed = ()=>{
     // BAN数に応じてターンを加算（1BAN=+1）
@@ -2156,11 +2149,11 @@ function showPerTurnBan(){
     cx.scale(dpr, dpr);
 
     // 背景
-    cx.fillStyle = '#060d18';
+    cx.fillStyle = '#050a14';
     cx.fillRect(0, 0, logW, logH);
 
     // グリッド線
-    cx.strokeStyle = 'rgba(20,60,120,0.9)';
+    cx.strokeStyle = 'rgba(40,80,140,0.55)';
     cx.lineWidth = 0.5;
     for(let r = 0; r <= drawRows; r++){
       cx.beginPath(); cx.moveTo(0, r*cs); cx.lineTo(logW, r*cs); cx.stroke();
@@ -2287,7 +2280,7 @@ function lockPiece(){
     const bonusLabels = ['','SINGLE','DOUBLE','TRIPLE','TETRIS!!'];
     showFeedback(
       (bonusLabels[n] || n+'LINE') + '  +' + (CFG.SCORE_TABLE[n]||0),
-      n >= 4 ? 'var(--gold)' : n >= 3 ? 'var(--cyan)' : 'var(--green)'
+      n >= 4 ? '#ffee00' : n >= 3 ? '#00ccff' : '#00ff41'
     );
   }
 
@@ -2351,10 +2344,10 @@ function drawCell(x,y,color){
 
 function drawBoard(){
   if(!gc || !gx || !board) return;
-  // 盤面背景: 周囲より明るい青みがかった色でくっきり区別
-  gx.fillStyle='#12122a';gx.fillRect(0,0,gc.width,gc.height);
-  // グリッド線: 少し明るくして空きマスが見やすく
-  gx.strokeStyle='rgba(60,60,120,.7)';gx.lineWidth=.5;
+  // ボード背景: 深い紺色（周囲の黒と区別しつつブロックが映える）
+  gx.fillStyle='#050a14';gx.fillRect(0,0,gc.width,gc.height);
+  // グリッド線: 青みがかったグレーで視認しやすく
+  gx.strokeStyle='rgba(40,80,140,.55)';gx.lineWidth=.5;
   for(let r=0;r<=CFG.ROWS;r++){gx.beginPath();gx.moveTo(0,r*CELL);gx.lineTo(gc.width,r*CELL);gx.stroke();}
   for(let c=0;c<=CFG.COLS;c++){gx.beginPath();gx.moveTo(c*CELL,0);gx.lineTo(c*CELL,gc.height);gx.stroke();}
   board.forEach((row,r)=>row.forEach((c,col)=>drawCell(col,r,c)));
@@ -2441,11 +2434,11 @@ function drawMinimapTo(cv, cx, b, activePiece, cs){
   cx.scale(dpr, dpr);
 
   // 背景: 濃い紺色（ブロックの色が鮮やかに映える）
-  cx.fillStyle = '#060d18';
+  cx.fillStyle = '#050a14';
   cx.fillRect(0, 0, logW, logH);
 
   // グリッド線: 青みがかった色で空きマスを視認しやすく
-  cx.strokeStyle = 'rgba(20,60,120,0.9)';
+  cx.strokeStyle = 'rgba(40,80,140,0.55)';
   cx.lineWidth = 0.5;
   for(let r = 0; r <= CFG.ROWS; r++){
     cx.beginPath(); cx.moveTo(0, r*cs); cx.lineTo(logW, r*cs); cx.stroke();
@@ -2749,7 +2742,7 @@ function onWin(seg){
     el.textContent = `「 ${seg.name} 」ピース決定！`;
     setTimeout(()=>{ hideRoulette(); setTimeout(()=> launchPiece(seg.name), 80); }, 1400);
   } else if(seg.type === 'free'){
-    el.style.color = '#ffd700';
+    el.style.color = '#ffee00';
     el.textContent = '⭐ FREE -- 好きに選んで！';
     setTimeout(()=>{
       // FREE モード: 大ミニマップ非表示 → 右上小ミニマップ表示
@@ -2759,7 +2752,7 @@ function onWin(seg){
     }, 650);
   } else {
     // JOKER: 何も起こらない（ターンスキップ）
-    el.style.color = '#ff2d78';
+    el.style.color = '#ff1a1a';
     el.textContent = '🃏 JOKER！このターンは何も起きない…';
     setTimeout(()=>{
       hideRoulette();
@@ -2953,7 +2946,7 @@ function startHoldDrop(){
       lockPiece();
     }
   }, HOLD_DROP_MS);
-  showFeedback('⚡', 'var(--gold)');
+  showFeedback('⚡', '#ffee00');
 }
 
 function stopHoldDrop(){
@@ -3006,7 +2999,7 @@ gameScreen.addEventListener('touchmove', e=>{
     clearTimeout(holdTimer); holdTimer = null; // 長押しキャンセル
     stopHoldDrop();
     hardDrop();
-    showFeedback('⬇ DROP', 'var(--gold)');
+    showFeedback('⬇ DROP', '#ffee00');
     return;
   }
 
@@ -3021,7 +3014,7 @@ gameScreen.addEventListener('touchmove', e=>{
         if(dir > 0){ moveRight(); }
         else        { moveLeft();  }
       }
-      showFeedback(dx>0 ? '▶' : '◀', 'var(--cyan)');
+      showFeedback(dx>0 ? '▶' : '◀', '#00ccff');
       lastSwipeX = t.clientX;
     }
   }
@@ -3045,7 +3038,7 @@ gameScreen.addEventListener('touchend', e=>{
   // タップ判定: 移動距離が小さく、時間も短い
   if(!swipeActive && dist < SWIPE.MAX_TAP && elapsed < 300){
     tryRotate();
-    showFeedback('↻', 'var(--cyan)');
+    showFeedback('↻', '#00ccff');
   }
   swipeActive = false;
 },{passive:false});
@@ -3102,9 +3095,9 @@ tap('btnPause', ()=>{
 
 // ─── キーボード（PC用） ──────────────
 document.addEventListener('keydown',e=>{
-  if(e.key==='ArrowLeft')  { moveLeft();   showFeedback('◀','var(--cyan)'); }
-  if(e.key==='ArrowRight') { moveRight();  showFeedback('▶','var(--cyan)'); }
-  if(e.key==='ArrowUp'||e.key==='z'||e.key==='Z') { tryRotate(); showFeedback('↻','var(--cyan)'); }
+  if(e.key==='ArrowLeft')  { moveLeft();   showFeedback('◀','#00ccff'); }
+  if(e.key==='ArrowRight') { moveRight();  showFeedback('▶','#00ccff'); }
+  if(e.key==='ArrowUp'||e.key==='z'||e.key==='Z') { tryRotate(); showFeedback('↻','#00ccff'); }
   if(e.key==='ArrowDown'||e.key===' '){ e.preventDefault(); hardDrop(); }
 });
 
@@ -3185,19 +3178,19 @@ function showInstallBanner(){
   banner.id = 'installBanner';
   banner.style.cssText = [
     'position:fixed;bottom:0;left:0;right:0;z-index:999;',
-    'background:var(--panel);border-top:1px solid #ff2d78;',
+    'background:#1a1a1a;border-top:1px solid #ff1a1a;',
     'padding:10px 14px;display:flex;align-items:center;gap:10px;',
     'font-family:"M PLUS Rounded 1c",sans-serif;',
   ].join('');
 
   const txt = document.createElement('div');
-  txt.style.cssText = 'flex:1;font-size:.72rem;color:#eeeeff;line-height:1.5;';
-  txt.innerHTML = '🍽️ <b>大食いテトリス</b><br><span style="font-size:.6rem;color:#55558a;">ホーム画面に追加してアプリとして使えます</span>';
+  txt.style.cssText = 'flex:1;font-size:.72rem;color:#ffffff;line-height:1.5;';
+  txt.innerHTML = '🍽️ <b>大食いテトリス</b><br><span style="font-size:.6rem;color:#888888;">ホーム画面に追加してアプリとして使えます</span>';
   banner.appendChild(txt);
 
   const installBtn = document.createElement('button');
   installBtn.textContent = '追加';
-  installBtn.style.cssText = 'font-family:"Orbitron",monospace;font-size:.7rem;font-weight:700;padding:8px 16px;background:#ff2d78;border:none;border-radius:20px;color:#fff;cursor:pointer;white-space:nowrap;flex-shrink:0;';
+  installBtn.style.cssText = 'font-family:"Orbitron",monospace;font-size:.7rem;font-weight:700;padding:8px 16px;background:#ff1a1a;border:none;border-radius:20px;color:#fff;cursor:pointer;white-space:nowrap;flex-shrink:0;';
   installBtn.onclick = async () => {
     if(deferredPrompt){
       deferredPrompt.prompt();
@@ -3210,7 +3203,7 @@ function showInstallBanner(){
 
   const closeBtn = document.createElement('button');
   closeBtn.textContent = '✕';
-  closeBtn.style.cssText = 'background:none;border:none;color:#55558a;font-size:1rem;cursor:pointer;padding:4px;flex-shrink:0;';
+  closeBtn.style.cssText = 'background:none;border:none;color:#888888;font-size:1rem;cursor:pointer;padding:4px;flex-shrink:0;';
   closeBtn.onclick = () => banner.remove();
   banner.appendChild(closeBtn);
 
@@ -3228,19 +3221,19 @@ if(isIOS && !isStandalone){
     banner.id = 'installBanner';
     banner.style.cssText = [
       'position:fixed;bottom:0;left:0;right:0;z-index:999;',
-      'background:var(--panel);border-top:1px solid #ff2d78;',
+      'background:#1a1a1a;border-top:1px solid #ff1a1a;',
       'padding:12px 14px 20px;',
       'font-family:"M PLUS Rounded 1c",sans-serif;',
       'text-align:center;',
     ].join('');
     banner.innerHTML = `
-      <div style="font-size:.72rem;color:#eeeeff;line-height:1.8;">
+      <div style="font-size:.72rem;color:#ffffff;line-height:1.8;">
         🍽️ <b>大食いテトリス</b> をアプリとして保存<br>
-        <span style="font-size:.62rem;color:#55558a;">
-          Safari の <b style="color:#00e5ff;">共有ボタン</b> → <b style="color:#00e5ff;">ホーム画面に追加</b>
+        <span style="font-size:.62rem;color:#888888;">
+          Safari の <b style="color:#00ccff;">共有ボタン</b> → <b style="color:#00ccff;">ホーム画面に追加</b>
         </span>
       </div>
-      <button onclick="this.parentElement.remove()" style="margin-top:8px;background:none;border:1px solid var(--border);border-radius:20px;color:#55558a;font-size:.65rem;padding:5px 18px;cursor:pointer;">閉じる</button>
+      <button onclick="this.parentElement.remove()" style="margin-top:8px;background:none;border:1px solid #333333;border-radius:20px;color:#888888;font-size:.65rem;padding:5px 18px;cursor:pointer;">閉じる</button>
     `;
     document.body.appendChild(banner);
     setTimeout(()=>{ banner.style.transition='opacity .5s'; banner.style.opacity='0'; setTimeout(()=>banner.remove(),500); }, 8000);
