@@ -70,8 +70,7 @@ touch-action:none;
 .btn-s{background:#0d1117;color:#6a8aaa;border:1px solid #2a4a7a;}
 
 /* ─── BAN ─── */
-#banScreen{gap:0;padding:0;overflow:hidden;justify-content:flex-start;font-size:0;}
-#banScreen *{font-size:revert;}
+#banScreen{gap:0;padding:0;overflow:hidden;justify-content:flex-start;}
 
 /* 上部: 設定エリア（固定高さ） */
 #banSettingsCol{
@@ -208,9 +207,7 @@ display:flex;flex-direction:column;
 align-items:center;gap:4px;
 padding-top:2px;
 background:#0d1117;
-font-size:0;
 }
-#sidebar *{font-size:revert;}
 .sb-label{
 font-size:.42rem;color:#6a8aaa;letter-spacing:.12em;
 font-family:‘Orbitron’,monospace;
@@ -691,11 +688,10 @@ min-width:80px;text-align:center;
   <div id="trCountdown" class="tr-countdown">3</div>
 </div>
 
-<div class="screen" id="banScreen">
-  <div id="banSettingsCol">
+<div class="screen" id="banScreen"><div id="banSettingsCol">
     <div class="ban-title">🚫 設定 &amp; BAN</div>
     <div class="ban-section">
-      <div class="ban-section-label">-- 難易度 --</div>
+      <div class="ban-section-label">難易度</div>
       <div style="display:flex;gap:6px;">
         <button class="diff-btn" id="diffEasyBtn"   onclick="setDifficulty('easy')">EASY<br><span>6段積み</span></button>
         <button class="diff-btn" id="diffNormalBtn" onclick="setDifficulty('normal')">NORMAL<br><span>10段積み</span></button>
@@ -703,7 +699,7 @@ min-width:80px;text-align:center;
       </div>
     </div>
     <div class="ban-section">
-      <div class="ban-section-label">-- 勝利条件 --</div>
+      <div class="ban-section-label">勝利条件</div>
       <div style="display:flex;gap:6px;">
         <button class="win-btn" id="winClearAllBtn"    onclick="setWinMode('clear_all')">全消し<br><span>盤面を空に</span></button>
         <button class="win-btn" id="winLineTargetBtn"  onclick="setWinMode('line_target')">ライン<br><span id="winLineLabel">10ライン</span></button>
@@ -711,8 +707,7 @@ min-width:80px;text-align:center;
       </div>
     </div>
     <div class="ban-sub" id="banScreenSub">毎ターン開始時にBANを選べます<br>ここでは難易度・勝利条件を設定してください</div>
-  </div>
-  <div id="banMiniSection">
+  </div><div id="banMiniSection">
     <div id="banMiniInner">
       <div class="ban-mini-header">
         <span class="ban-mini-title">📊 初期盤面プレビュー</span>
@@ -721,14 +716,12 @@ min-width:80px;text-align:center;
           <span id="banSbCells" class="ban-mini-val" style="color:#6a8aaa;font-size:.6rem;">--</span><span class="ban-mini-unit" style="color:#6a8aaa;">セル</span>
         </div>
         <button id="banRegenBtn" onclick="regenPreview()">🔄 別パターン</button>
-      </div>
-      <div id="banMinimapWrap">
+      </div><div id="banMinimapWrap">
         <canvas id="banMinimapCanvas"></canvas>
         <div id="banMinimapBar"><div id="banMinimapBarFill"></div></div>
       </div>
     </div>
-  </div>
-  <div id="banFooter">
+  </div><div id="banFooter">
     <button class="btn btn-p" style="width:100%;max-width:320px;font-size:.8rem;padding:16px 0;" onclick="startGame()">▶ ゲームスタート</button>
     <button class="btn btn-s" style="width:100%;max-width:320px;font-size:.72rem;padding:11px 0;" onclick="showScreen('titleScreen')">← 戻る</button>
   </div>
@@ -765,22 +758,10 @@ min-width:80px;text-align:center;
     </div>
 
 ```
-<div id="sidebar">
-  <div class="sb-label">盤面</div>
-  <div id="minimapWrap">
-    <canvas id="minimapCanvas"></canvas>
-    <div id="minimapBar">
-      <div id="minimapBarFill"></div>
-    </div>
-  </div>
-  <div class="sb-stat"><span id="sbRemain">--</span><span class="sb-unit">段</span></div>
-  <div class="sb-stat" style="color:#00ccff"><span id="sbLines">0</span><span class="sb-unit">L</span></div>
-</div>
+<div id="sidebar"><div class="sb-label">盤面</div><div id="minimapWrap"><canvas id="minimapCanvas"></canvas><div id="minimapBar"><div id="minimapBarFill"></div></div></div><div class="sb-stat"><span id="sbRemain">--</span><span class="sb-unit">段</span></div><div class="sb-stat" style="color:#00ccff"><span id="sbLines">0</span><span class="sb-unit">L</span></div></div></div><div id="controls">
+<button class="ctrl" id="btnPause">⏸</button>
 ```
 
-  </div>
-  <div id="controls">
-    <button class="ctrl" id="btnPause">⏸</button>
   </div>
 </div>
 
