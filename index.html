@@ -17,6 +17,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="大食いテトリス">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0e0e18">
 <meta name="description" content="ルーレットでブロックを決めて積み上がりを消す逆テトリスゲーム">
 
@@ -31,16 +32,40 @@
 /* フォントはlinkタグで読み込む（@importはオフライン時に全CSS停止するリスクがある） */
 
 :root {
+color-scheme: dark;
 –bg:#05050d; –panel:#16162a; –border:#2a2a50;
 –accent:#ff2d78; –cyan:#00e5ff; –gold:#ffd700;
 –green:#39ff14; –text:#eeeeff; –dim:#55558a;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+
+/* Web公開: ライトモード端末での色反転防止 */
+/* button/input のシステムデフォルトスタイルを完全リセット */
+button,input,select,textarea{
+-webkit-appearance:none;
+-moz-appearance:none;
+appearance:none;
+background:transparent;
+border:none;
+color:inherit;
+font:inherit;
+cursor:pointer;
+outline:none;
+}
+html{
+background:#05050d;
+background-color:#05050d;
+}
+body{
+background:#05050d;
+background-color:#05050d;
+color:#eeeeff;
+}
 html,body{width:100%;height:100%;background:var(–bg);color:var(–text);font-family:‘M PLUS Rounded 1c’,sans-serif;overflow:hidden;touch-action:none;}
 
 /* ─── SCREENS ─── */
-.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:10;background:var(–bg);}
-.screen.active{display:flex;}
+.screen{position:fixed;inset:0;display:none;z-index:10;background:var(–bg);}
+.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;}
 
 /* ─── TITLE ─── */
 #titleScreen{gap:20px;padding:28px 20px;background:linear-gradient(160deg,#0e0e18 60%,#1a0a20);}
@@ -266,10 +291,13 @@ transition:all .15s;line-height:1.6;
 #orientOverlay{
 position:fixed;inset:0;z-index:80;
 background:var(–bg);
-display:none;flex-direction:column;
+display:none;
+}
+#orientOverlay.active{
+display:flex;
+flex-direction:column;
 align-items:center;
 }
-#orientOverlay.active{display:flex;}
 
 #orientHeader{
 width:100%;padding:16px 18px 10px;
@@ -351,11 +379,15 @@ ITEM_SIZE=88px / GAP=10px / STEP=98px
 #rouletteOverlay{
 position:fixed;inset:0;z-index:200;
 background:rgba(8,8,16,.98);
-display:none;flex-direction:column;
-align-items:stretch;justify-content:flex-start;
+display:none;
 overflow:hidden;
 }
-#rouletteOverlay.active{display:flex;}
+#rouletteOverlay.active{
+display:flex;
+flex-direction:column;
+align-items:stretch;
+justify-content:flex-start;
+}
 
 /* ─── 上部: ミニマップエリア ─── */
 #rlMapSection{
@@ -473,8 +505,11 @@ min-height:1.5em;text-align:center;letter-spacing:.05em;
 #rlFreeMinimap{
 display:none;
 position:absolute;top:10px;right:10px;
-flex-direction:column;align-items:center;gap:4px;
 z-index:5;
+}
+#rouletteOverlay.free-mode #rlFreeMinimap{
+display:flex;
+flex-direction:column;align-items:center;gap:4px;
 }
 #rouletteOverlay.free-mode #rlFreeMinimap{display:flex;}
 .rl-fm-label{
@@ -511,7 +546,8 @@ justify-content:center;
 position:relative;
 }
 
-#pieceSel{display:none;flex-direction:column;align-items:center;gap:8px;width:100%;}
+#pieceSel{display:none;width:100%;}
+#pieceSel.active{display:flex;flex-direction:column;align-items:center;gap:8px;}
 #pieceSel.active{display:flex;}
 .ps-lbl{font-size:.58rem;color:var(–dim);letter-spacing:.2em;}
 .ps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;width:100%;max-width:300px;}
@@ -594,10 +630,10 @@ transition:all .15s;line-height:1.6;display:flex;flex-direction:column;align-ite
 #transitionOverlay{
 position:fixed;inset:0;z-index:60;
 background:#0e0e18;
-display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+display:none;
 padding:24px;
 }
-#transitionOverlay.active{display:flex;}
+#transitionOverlay.active{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
 .tr-gameover{font-family:‘Orbitron’,monospace;font-size:1.8rem;font-weight:900;color:var(–accent);letter-spacing:.1em;text-shadow:0 0 30px rgba(255,45,120,.8);}
 .tr-arrow{font-size:2rem;animation:pulse 1s infinite;color:var(–gold);}
 .tr-next{font-family:‘Orbitron’,monospace;font-size:.8rem;font-weight:700;color:var(–cyan);letter-spacing:.1em;text-align:center;line-height:1.8;}
