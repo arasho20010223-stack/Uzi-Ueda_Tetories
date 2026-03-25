@@ -1,0 +1,3012 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>大食いテトリス</title>
+
+<!-- ═══ PWA 対応 ═══ -->
+
+<meta name="application-name" content="大食いテトリス">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="大食いテトリス">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0e0e18">
+<meta name="description" content="ルーレットでブロックを決めて積み上がりを消す逆テトリスゲーム">
+
+<!-- Apple Touch Icon (inline SVG → Data URI) -->
+
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230e0e18'/%3E%3Ctext x='256' y='320' font-size='280' text-anchor='middle' fill='%23ff2d78'%3E%F0%9F%8D%BD%EF%B8%8F%3C/text%3E%3C/svg%3E">
+
+<!-- Web App Manifest (inline) -->
+
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%E5%A4%A7%E9%A3%9F%E3%81%84%E3%83%86%E3%83%88%E3%83%AA%E3%82%B9%22%2C%22short_name%22%3A%22%E5%A4%A7%E9%A3%9F%E3%81%84%E3%83%86%E3%83%88%E3%83%AA%E3%82%B9%22%2C%22description%22%3A%22%E3%83%AB%E3%83%BC%E3%83%AC%E3%83%83%E3%83%88%E3%81%A7%E3%83%96%E3%83%AD%E3%83%83%E3%82%AF%E3%82%92%E6%B1%BA%E3%82%81%E3%81%A6%E7%A9%8D%E3%81%BF%E4%B8%8A%E3%81%8C%E3%82%8A%E3%82%92%E6%B6%88%E3%81%99%E9%80%86%E3%83%86%E3%83%88%E3%83%AA%E3%82%B9%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait%22%2C%22background_color%22%3A%22%230e0e18%22%2C%22theme_color%22%3A%22%230e0e18%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%2520viewBox%3D'0%25200%2520512%2520512'%253E%253Crect%2520width%3D'512'%2520height%3D'512'%2520rx%3D'100'%2520fill%3D'%25230e0e18'%2F%253E%253Ctext%2520x%3D'256'%2520y%3D'320'%2520font-size%3D'280'%2520text-anchor%3D'middle'%253E%25F0%259F%258D%25BD%25EF%25B8%258F%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap');
+
+:root {
+–bg:#05050d; –panel:#16162a; –border:#2a2a50;
+–accent:#ff2d78; –cyan:#00e5ff; –gold:#ffd700;
+–green:#39ff14; –text:#eeeeff; –dim:#55558a;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+html,body{width:100%;height:100%;background:var(–bg);color:var(–text);font-family:‘M PLUS Rounded 1c’,sans-serif;overflow:hidden;touch-action:none;}
+
+/* ─── SCREENS ─── */
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:10;background:var(–bg);}
+.screen.active{display:flex;}
+
+/* ─── TITLE ─── */
+#titleScreen{gap:20px;padding:28px 20px;background:linear-gradient(160deg,#0e0e18 60%,#1a0a20);}
+.title-logo{font-family:‘Orbitron’,monospace;font-size:2rem;font-weight:900;color:var(–accent);text-shadow:0 0 30px rgba(255,45,120,.7);letter-spacing:.08em;text-align:center;line-height:1.2;}
+.title-logo span{color:var(–gold);}
+.title-sub{font-size:.68rem;color:var(–dim);letter-spacing:.4em;}
+.title-desc{background:var(–panel);border:1px solid var(–border);border-radius:16px;padding:14px 18px;max-width:320px;width:100%;font-size:.72rem;line-height:2;color:var(–dim);text-align:center;}
+.title-desc b{color:var(–text);}
+.btn{font-family:‘Orbitron’,monospace;font-size:.85rem;font-weight:700;letter-spacing:.15em;padding:16px 0;width:100%;max-width:280px;border:none;border-radius:50px;cursor:pointer;transition:transform .1s;}
+.btn:active{transform:scale(.96);}
+.btn-p{background:var(–accent);color:#fff;box-shadow:0 0 24px rgba(255,45,120,.5);}
+.btn-s{background:var(–panel);color:var(–dim);border:1px solid var(–border);}
+
+/* ─── BAN ─── */
+#banScreen{gap:0;padding:0;overflow:hidden;}
+
+/* 2カラムレイアウト */
+#banLayout{
+width:100%;height:100%;
+display:flex;flex-direction:row;
+align-items:stretch;
+padding:10px 8px 8px;
+gap:10px;
+overflow:hidden;
+}
+
+/* 左カラム: 設定エリア */
+#banSettingsCol{
+flex:1;min-width:0;
+display:flex;flex-direction:column;
+gap:7px;
+overflow-y:auto;
+}
+.ban-section{display:flex;flex-direction:column;gap:4px;}
+.ban-section-label{font-size:.48rem;color:var(–dim);letter-spacing:.2em;text-align:center;}
+
+.ban-title{font-family:‘Orbitron’,monospace;font-size:.85rem;font-weight:900;color:var(–accent);letter-spacing:.15em;text-align:left;}
+.ban-sub{font-size:.58rem;color:var(–dim);line-height:1.7;}
+.ban-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;}
+.ban-btn{background:var(–panel);border:2px solid var(–border);border-radius:10px;padding:8px 3px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(–text);font-family:‘Orbitron’,monospace;font-size:.62rem;position:relative;}
+.ban-btn.banned{background:rgba(255,45,120,.1);border-color:var(–accent);opacity:.5;}
+.ban-x{display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:1.6rem;border-radius:8px;background:rgba(255,45,120,.2);color:var(–accent);}
+.ban-btn.banned .ban-x{display:flex;}
+.ban-count{font-size:.55rem;color:var(–dim);}
+.ban-count b{font-family:‘Orbitron’,monospace;color:var(–accent);font-size:.82rem;}
+
+/* 右カラム: ミニマップサイドバー(ゲーム中と同デザイン) */
+#banSidebar{
+width:50px;flex-shrink:0;
+display:flex;flex-direction:column;
+align-items:center;gap:5px;
+padding-top:2px;
+}
+#banMinimapWrap{
+position:relative;
+border:1px solid var(–border);
+border-radius:5px;
+overflow:hidden;
+background:#0a0a12;
+box-shadow:0 0 8px rgba(0,229,255,.1);
+}
+#banMinimapCanvas{display:block;image-rendering:pixelated;}
+#banMinimapBar{
+position:absolute;top:0;right:0;bottom:0;width:4px;
+background:rgba(255,255,255,.06);
+}
+#banMinimapBarFill{
+position:absolute;bottom:0;left:0;right:0;
+background:var(–accent);
+transition:height .3s ease;
+box-shadow:0 0 6px rgba(255,45,120,.6);
+}
+#banRegenBtn{
+font-family:‘Orbitron’,monospace;font-size:.55rem;font-weight:700;
+width:100%;padding:7px 2px;
+background:var(–panel);border:1px solid var(–border);
+border-radius:8px;color:var(–dim);cursor:pointer;
+text-align:center;line-height:1.5;
+transition:all .15s;
+}
+#banRegenBtn:active{border-color:var(–cyan);color:var(–cyan);transform:scale(.94);}
+
+/* ─── GAME ─── */
+#gameScreen{justify-content:flex-start;padding:0;}
+#hud{width:100%;padding:10px 14px 8px;display:flex;align-items:center;justify-content:space-between;background:var(–panel);border-bottom:2px solid var(–border);flex-shrink:0;}
+.hud-logo{font-family:‘Orbitron’,monospace;font-size:.9rem;font-weight:900;color:var(–accent);text-shadow:0 0 12px rgba(255,45,120,.5);}
+.hud-stats{display:flex;gap:18px;}
+.hud-st{text-align:center;}
+.hl{display:block;font-size:.52rem;color:var(–dim);letter-spacing:.18em;}
+.hv{font-family:‘Orbitron’,monospace;font-size:1.15rem;font-weight:700;}
+
+#gameArea{flex:1;display:flex;flex-direction:row;align-items:stretch;min-height:0;padding:4px 6px 2px;gap:6px;}
+
+#boardWrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;min-width:0;}
+#gameCanvas{
+display:block;image-rendering:pixelated;touch-action:none;
+border:2px solid #2a2a60;
+border-radius:4px;
+box-shadow:0 0 0 1px #0a0a18, 0 0 20px rgba(0,0,0,.6);
+}
+
+/* スワイプ操作ガイド */
+#swipeGuide{
+display:flex;align-items:center;gap:8px;
+font-size:.5rem;color:var(–dim);letter-spacing:.08em;
+margin-top:5px;opacity:.7;
+font-family:‘M PLUS Rounded 1c’,sans-serif;
+}
+.guide-sep{color:var(–border);}
+
+/* スワイプ視覚フィードバック */
+#swipeFeedback{
+position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+font-family:‘Orbitron’,monospace;font-size:1.2rem;font-weight:900;
+pointer-events:none;z-index:90;opacity:0;
+transition:opacity .15s;
+text-shadow:0 0 20px currentColor;
+white-space:nowrap;letter-spacing:.06em;
+}
+#swipeFeedback.show{opacity:1;}
+
+/* ─── 右サイドバー:ミニマップ ─── */
+#sidebar{
+width:44px;flex-shrink:0;
+display:flex;flex-direction:column;
+align-items:center;gap:4px;
+padding-top:2px;
+}
+.sb-label{
+font-size:.42rem;color:var(–dim);letter-spacing:.12em;
+font-family:‘Orbitron’,monospace;
+}
+#minimapWrap{
+position:relative;
+border:1px solid var(–border);
+border-radius:5px;
+overflow:hidden;
+background:#0a0a12;
+box-shadow:0 0 8px rgba(0,229,255,.1);
+}
+#minimapCanvas{display:block;image-rendering:pixelated;}
+
+/* 残り段数バー(ミニマップ右端の縦ゲージ) */
+#minimapBar{
+position:absolute;top:0;right:0;bottom:0;width:4px;
+background:rgba(255,255,255,.06);
+}
+#minimapBarFill{
+position:absolute;bottom:0;left:0;right:0;
+background:var(–accent);
+transition:height .3s ease;
+box-shadow:0 0 6px rgba(255,45,120,.6);
+}
+.sb-stat{
+font-family:‘Orbitron’,monospace;font-size:.7rem;font-weight:700;
+color:var(–green);text-align:center;line-height:1;
+}
+.sb-unit{font-size:.4rem;color:var(–dim);display:block;letter-spacing:.1em;}
+
+#controls{width:100%;padding:5px 10px 10px;display:flex;justify-content:flex-end;flex-shrink:0;}
+.ctrl{background:var(–panel);border:1px solid var(–border);border-radius:12px;color:var(–text);font-size:1.05rem;padding:13px 20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .1s;}
+.ctrl:active,.ctrl.pressed{background:rgba(0,229,255,.15);border-color:var(–cyan);transform:scale(.93);}
+#btnPause{font-size:.58rem;color:var(–dim);letter-spacing:.05em;}
+
+/* T2: BAN mode selector */
+.ban-mode-btn{
+flex:1;font-family:‘Orbitron’,monospace;font-size:.6rem;font-weight:700;
+letter-spacing:.05em;padding:10px 4px;border-radius:10px;cursor:pointer;
+background:var(–panel);border:2px solid var(–border);color:var(–dim);
+transition:all .15s;
+}
+.ban-mode-btn.active{background:rgba(255,45,120,.15);border-color:var(–accent);color:var(–accent);}
+.ban-mode-btn:active{transform:scale(.95);}
+
+/* T4: Difficulty selector */
+.diff-btn{
+flex:1;font-family:‘Orbitron’,monospace;font-size:.55rem;font-weight:700;
+letter-spacing:.03em;padding:9px 4px 8px;border-radius:10px;cursor:pointer;
+background:var(–panel);border:2px solid var(–border);color:var(–dim);
+transition:all .15s;line-height:1.6;
+}
+.diff-btn span{font-size:.48rem;font-family:‘M PLUS Rounded 1c’,sans-serif;letter-spacing:.05em;}
+.diff-btn.active{background:rgba(0,229,255,.12);border-color:var(–cyan);color:var(–cyan);}
+.diff-btn:active{transform:scale(.95);}
+
+/* チケットB: Win mode selector */
+.win-btn{
+flex:1;font-family:‘Orbitron’,monospace;font-size:.55rem;font-weight:700;
+letter-spacing:.03em;padding:9px 4px 8px;border-radius:10px;cursor:pointer;
+background:var(–panel);border:2px solid var(–border);color:var(–dim);
+transition:all .15s;line-height:1.6;
+}
+.win-btn span{font-size:.45rem;font-family:‘M PLUS Rounded 1c’,sans-serif;letter-spacing:.04em;}
+.win-btn.active{background:rgba(255,215,0,.12);border-color:var(–gold);color:var(–gold);}
+.win-btn:active{transform:scale(.95);}
+
+/* ══════════════════════════════════════
+オリエンテーション
+══════════════════════════════════════ */
+#orientOverlay{
+position:fixed;inset:0;z-index:80;
+background:#05050d;
+display:none;flex-direction:column;
+align-items:center;
+}
+#orientOverlay.active{display:flex;}
+
+#orientHeader{
+width:100%;padding:16px 18px 10px;
+display:flex;flex-direction:column;align-items:center;gap:10px;
+flex-shrink:0;
+}
+#orientTitle{
+font-family:‘Orbitron’,monospace;font-size:.8rem;font-weight:900;
+color:var(–accent);letter-spacing:.15em;
+}
+#orientDots{display:flex;gap:8px;align-items:center;}
+.o-dot{
+width:8px;height:8px;border-radius:50%;
+background:var(–border);transition:all .3s;
+}
+.o-dot.active{background:var(–accent);transform:scale(1.3);}
+
+#orientSlides{
+flex:1;min-height:0;
+width:100%;overflow:hidden;position:relative;
+}
+.o-slide{
+position:absolute;inset:0;
+display:flex;flex-direction:column;align-items:center;justify-content:center;
+gap:16px;padding:10px 20px;
+opacity:0;transform:translateX(60px);
+transition:opacity .35s ease, transform .35s ease;
+pointer-events:none;
+}
+.o-slide.active{
+opacity:1;transform:translateX(0);pointer-events:auto;
+}
+.o-slide.exit{
+opacity:0;transform:translateX(-60px);
+}
+.o-illust{
+border:2px solid var(–border);border-radius:12px;
+background:#0a0a1a;
+box-shadow:0 0 20px rgba(0,229,255,.1);
+flex-shrink:0;
+}
+.o-slide-title{
+font-family:‘Orbitron’,monospace;font-size:.85rem;font-weight:900;
+color:var(–cyan);letter-spacing:.1em;text-align:center;
+}
+.o-slide-body{
+font-family:‘M PLUS Rounded 1c’,sans-serif;font-size:.72rem;
+color:var(–text);text-align:center;line-height:1.9;
+}
+.o-slide-body b{color:var(–gold);}
+.o-slide-body .hi{color:var(–cyan);}
+
+#orientFooter{
+width:100%;padding:12px 20px 20px;
+display:flex;align-items:center;justify-content:space-between;
+flex-shrink:0;gap:12px;
+}
+#orientPrev{
+font-family:‘Orbitron’,monospace;font-size:.7rem;font-weight:700;
+padding:11px 20px;background:var(–panel);border:1px solid var(–border);
+border-radius:30px;color:var(–dim);cursor:pointer;
+transition:all .15s;
+}
+#orientPrev:active{border-color:var(–cyan);color:var(–cyan);}
+#orientNext{
+font-family:‘Orbitron’,monospace;font-size:.75rem;font-weight:700;
+padding:13px 30px;background:var(–accent);border:none;
+border-radius:30px;color:#fff;cursor:pointer;flex:1;
+box-shadow:0 0 16px rgba(255,45,120,.4);
+transition:all .15s;letter-spacing:.1em;
+}
+#orientNext:active{transform:scale(.96);}
+
+ITEM_SIZE=88px / GAP=10px / STEP=98px
+セレクター枠もアイテムと同サイズ
+══════════════════════════════════════ */
+#rouletteOverlay{
+position:fixed;inset:0;z-index:50;
+background:rgba(8,8,16,.97);
+display:none;flex-direction:column;
+align-items:center;justify-content:center;
+gap:20px;padding:20px;
+}
+#rouletteOverlay.active{display:flex;}
+.rl-ttl{font-family:‘Orbitron’,monospace;font-size:.62rem;letter-spacing:.45em;color:var(–dim);}
+
+/* ドラム全体 */
+.rl-drum-wrap{
+position:relative;
+width:360px;max-width:92vw;
+height:108px;
+overflow:hidden;
+flex-shrink:0;
+}
+/* 左右フェード */
+.rl-fade-l,.rl-fade-r{
+position:absolute;top:0;bottom:0;width:80px;z-index:3;pointer-events:none;
+}
+.rl-fade-l{left:0;background:linear-gradient(90deg,rgba(8,8,16,1) 0%,transparent 100%);}
+.rl-fade-r{right:0;background:linear-gradient(270deg,rgba(8,8,16,1) 0%,transparent 100%);}
+
+/* 選択枠（中央固定・アイテムと同サイズ88px） */
+.rl-selector{
+position:absolute;top:50%;left:50%;
+transform:translate(-50%,-50%);
+width:88px;height:92px;
+border:2.5px solid var(–accent);border-radius:14px;
+z-index:4;pointer-events:none;
+box-shadow:0 0 0 1px rgba(255,45,120,.2),0 0 24px rgba(255,45,120,.6),inset 0 0 12px rgba(255,45,120,.1);
+}
+.rl-selector::before,.rl-selector::after{
+content:’’;position:absolute;left:50%;transform:translateX(-50%);
+width:10px;height:5px;background:var(–accent);border-radius:3px;
+}
+.rl-selector::before{top:-4px;}
+.rl-selector::after{bottom:-4px;}
+
+/* スクロールトラック */
+.rl-drum-track{display:flex;align-items:center;gap:10px;height:100%;will-change:transform;}
+
+/* アイテム: 幅・高さ・flexを完全固定 */
+.rl-item{
+width:88px;min-width:88px;max-width:88px;flex:0 0 88px;
+height:92px;
+background:var(–panel);border:2px solid var(–border);border-radius:14px;
+display:flex;flex-direction:column;align-items:center;justify-content:center;
+gap:4px;font-family:‘Orbitron’,monospace;font-size:.65rem;
+user-select:none;
+transition:transform .25s ease, opacity .25s ease, filter .25s ease;
+}
+/* 当選ハイライト: 拡大+発光 */
+.rl-item.sel{
+border-color:var(–accent);
+background:rgba(255,45,120,.12);
+box-shadow:0 0 0 2px rgba(255,45,120,.3),0 0 28px rgba(255,45,120,.7);
+transform:scale(1.08);
+z-index:2;
+}
+/* 停止後: 非当選アイテムを暗くする */
+.rl-drum-track.decided .rl-item:not(.sel){
+opacity:0.3;filter:brightness(0.45) saturate(0.3);
+}
+
+.rl-result{
+font-family:‘Orbitron’,monospace;font-size:1.05rem;font-weight:700;
+color:var(–gold);text-shadow:0 0 16px rgba(255,215,0,.7);
+min-height:1.5em;text-align:center;letter-spacing:.05em;
+}
+
+/* ルーレット内ミニマップ（右上固定） */
+#rlMinimap{
+position:absolute;top:12px;right:12px;
+display:flex;flex-direction:column;align-items:center;gap:5px;
+z-index:5;
+}
+.rl-mm-label{
+font-family:‘Orbitron’,monospace;font-size:.48rem;
+color:var(–dim);letter-spacing:.12em;
+}
+#rlMinimapWrap{
+position:relative;
+border:1px solid var(–border);border-radius:6px;
+overflow:hidden;background:#0a0a12;
+box-shadow:0 0 10px rgba(0,229,255,.18);
+}
+#rlMinimapCanvas{display:block;image-rendering:pixelated;}
+#rlMinimapBar{
+position:absolute;top:0;right:0;bottom:0;width:4px;
+background:rgba(255,255,255,.06);
+}
+#rlMinimapBarFill{
+position:absolute;bottom:0;left:0;right:0;
+background:var(–accent);
+box-shadow:0 0 6px rgba(255,45,120,.7);
+}
+.rl-mm-stat{
+font-family:‘Orbitron’,monospace;font-size:.82rem;font-weight:700;
+color:var(–green);text-align:center;line-height:1;
+}
+.rl-mm-unit{font-size:.44rem;color:var(–dim);letter-spacing:.1em;}
+#pieceSel{display:none;flex-direction:column;align-items:center;gap:8px;width:100%;}
+#pieceSel.active{display:flex;}
+.ps-lbl{font-size:.58rem;color:var(–dim);letter-spacing:.2em;}
+.ps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;width:100%;max-width:300px;}
+.ps-btn{background:var(–panel);border:1px solid var(–border);border-radius:10px;padding:7px 3px 5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(–text);font-family:‘Orbitron’,monospace;font-size:.6rem;}
+.ps-btn:active{transform:scale(.92);}
+
+#spinBtn{font-family:‘Orbitron’,monospace;font-size:.82rem;font-weight:700;letter-spacing:.2em;padding:15px 52px;background:var(–accent);border:none;border-radius:50px;color:#fff;cursor:pointer;box-shadow:0 0 22px rgba(255,45,120,.5);transition:transform .1s;}
+#spinBtn:active{transform:scale(.95);}
+#spinBtn:disabled{opacity:.3;}
+
+/* ─── RESULT ─── */
+#resultScreen{gap:14px;padding:30px 22px;}
+.res-title{font-family:‘Orbitron’,monospace;font-size:1.7rem;font-weight:900;text-align:center;}
+.res-win{color:var(–gold);text-shadow:0 0 28px rgba(255,215,0,.6);}
+.res-lose{color:var(–accent);text-shadow:0 0 28px rgba(255,45,120,.6);}
+.res-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:300px;}
+.res-card{background:var(–panel);border:1px solid var(–border);border-radius:14px;padding:11px 7px;text-align:center;}
+.rc-lbl{display:block;font-size:.48rem;color:var(–dim);letter-spacing:.2em;margin-bottom:3px;}
+.rc-val{font-family:‘Orbitron’,monospace;font-size:1.15rem;font-weight:700;}
+.res-sub{font-size:.62rem;color:var(–dim);text-align:center;line-height:1.8;}
+
+/* ─── FLASH ─── */
+#lineFlash{position:fixed;inset:0;z-index:80;background:rgba(57,255,20,.13);pointer-events:none;display:none;}
+#lineFlash.on{display:block;animation:fa .4s ease;}
+@keyframes fa{0%{opacity:1}100%{opacity:0}}
+
+/* ─── TITLE BAN MODE ─── */
+.title-ban-wrap{width:100%;max-width:320px;display:flex;flex-direction:column;gap:8px;}
+.title-ban-label{font-size:.58rem;color:var(–dim);letter-spacing:.25em;text-align:center;}
+.title-ban-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.title-mode-btn{
+background:var(–panel);border:2px solid var(–border);border-radius:14px;
+padding:12px 8px 10px;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;gap:4px;
+transition:all .15s;-webkit-tap-highlight-color:transparent;
+}
+.title-mode-btn:active{transform:scale(.94);}
+.title-mode-btn.active{
+background:rgba(255,45,120,.12);border-color:var(–accent);
+box-shadow:0 0 16px rgba(255,45,120,.25);
+}
+.tmb-icon{font-size:1.4rem;line-height:1;}
+.tmb-name{
+font-family:‘Orbitron’,monospace;font-size:.62rem;font-weight:700;
+color:var(–dim);letter-spacing:.05em;
+}
+.title-mode-btn.active .tmb-name{color:var(–accent);}
+.tmb-desc{
+font-size:.52rem;color:var(–dim);text-align:center;line-height:1.6;
+}
+
+/* ─── BAN SCREEN MODE INDICATOR ─── */
+.ban-mode-indicator{
+display:flex;align-items:center;gap:7px;
+background:rgba(255,45,120,.08);border:1px solid rgba(255,45,120,.3);
+border-radius:20px;padding:5px 14px;
+font-size:.6rem;color:var(–accent);
+font-family:‘Orbitron’,monospace;letter-spacing:.1em;
+}
+.ban-mode-indicator span:first-child{font-size:.9rem;}
+
+/* ─── GAME MODE SELECTOR (タイトル) ─── */
+.gmode-wrap{width:100%;max-width:320px;display:flex;flex-direction:column;gap:8px;}
+.gmode-label{font-size:.52rem;color:var(–dim);letter-spacing:.22em;text-align:center;font-family:‘Orbitron’,monospace;}
+.gmode-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.gmode-btn{
+font-family:‘Orbitron’,monospace;font-size:.55rem;font-weight:700;
+letter-spacing:.04em;padding:12px 6px 10px;border-radius:12px;cursor:pointer;
+background:var(–panel);border:2px solid var(–border);color:var(–dim);
+transition:all .15s;line-height:1.6;display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.gmode-btn span.gmode-icon{font-size:1.4rem;line-height:1;}
+.gmode-btn span.gmode-name{font-size:.6rem;color:var(–dim);}
+.gmode-btn span.gmode-desc{font-size:.48rem;color:#44445a;font-family:‘M PLUS Rounded 1c’,sans-serif;letter-spacing:.04em;line-height:1.5;text-align:center;}
+.gmode-btn.active{background:rgba(0,229,255,.1);border-color:var(–cyan);}
+.gmode-btn.active .gmode-name{color:var(–cyan);}
+.gmode-btn:active{transform:scale(.95);}
+
+/* ─── 遷移演出オーバーレイ ─── */
+#transitionOverlay{
+position:fixed;inset:0;z-index:60;
+background:#0e0e18;
+display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+padding:24px;
+}
+#transitionOverlay.active{display:flex;}
+.tr-gameover{font-family:‘Orbitron’,monospace;font-size:1.8rem;font-weight:900;color:var(–accent);letter-spacing:.1em;text-shadow:0 0 30px rgba(255,45,120,.8);}
+.tr-arrow{font-size:2rem;animation:pulse 1s infinite;color:var(–gold);}
+.tr-next{font-family:‘Orbitron’,monospace;font-size:.8rem;font-weight:700;color:var(–cyan);letter-spacing:.1em;text-align:center;line-height:1.8;}
+.tr-mini{border:1px solid var(–border);border-radius:8px;overflow:hidden;background:#0a0a12;box-shadow:0 0 20px rgba(0,229,255,.2);}
+.tr-countdown{
+font-family:‘Orbitron’,monospace;font-size:3rem;font-weight:900;
+color:var(–gold);text-shadow:0 0 30px rgba(255,215,0,.8);
+transition:transform .2s ease;
+min-width:80px;text-align:center;
+}
+@keyframes pulse{0%,100%{opacity:.5;}50%{opacity:1;}}
+</style>
+
+</head>
+<body>
+
+<!-- TITLE -->
+
+<div class="screen active" id="titleScreen">
+  <div class="title-logo">🍽️ 大食い<span>テ</span>トリス</div>
+  <div class="title-sub">EAT &amp; DROP</div>
+  <div class="title-desc" id="titleDesc">
+    <b>ルーレット</b>でブロック決定<br>
+    左右・回転で位置を調整<br>
+    ブロックは<b>自動で落下</b>する<br>
+    ラインを消して<b>全消しを目指せ！</b>
+  </div>
+
+  <!-- ゲームモード選択 -->
+
+  <div class="gmode-wrap">
+    <div class="gmode-label">— ゲームモード —</div>
+    <div class="gmode-btns">
+      <button class="gmode-btn active" id="gmodeStdBtn" onclick="selectGameMode('standard_reverse')">
+        <span class="gmode-icon">🔄</span>
+        <span class="gmode-name">逆テトリス</span>
+        <span class="gmode-desc">積み上がった盤面から<br>全消しを目指す</span>
+      </button>
+      <button class="gmode-btn" id="gmodeGoBtn" onclick="selectGameMode('gameover_reverse')">
+        <span class="gmode-icon">💀</span>
+        <span class="gmode-name">引き継ぎ</span>
+        <span class="gmode-desc">通常テトリスで<br>積んで引き継ぐ</span>
+      </button>
+    </div>
+  </div>
+
+<button class="btn btn-p" id="titleStartBtn" onclick="showBanScreen()">▶ 逆テトリスを開始</button>
+<button class="btn btn-s" id="titleHelpBtn" onclick="showHelp()">？ 遊び方</button>
+
+</div>
+
+<!-- オリエンテーション（初回チュートリアル） -->
+
+<div id="orientOverlay">
+  <div id="orientHeader">
+    <div id="orientTitle">大食いテトリス　遊び方</div>
+    <div id="orientDots"></div>
+  </div>
+  <div id="orientSlides"></div>
+  <div id="orientFooter">
+    <button id="orientPrev" onclick="orientMove(-1)">◀</button>
+    <button id="orientNext" onclick="orientMove(1)">次へ ▶</button>
+  </div>
+</div>
+<div id="transitionOverlay">
+  <div class="tr-gameover">💀 GAME OVER</div>
+  <div class="tr-next">この盤面で逆テトリス開始！</div>
+  <canvas id="trMiniCanvas" class="tr-mini"></canvas>
+  <div class="tr-arrow">⬇</div>
+  <div id="trCountdown" class="tr-countdown">3</div>
+</div>
+
+<!-- BAN -->
+
+<div class="screen" id="banScreen">
+
+  <!-- 2カラムレイアウト: 左=設定 / 右=ミニマップ -->
+
+  <div id="banLayout">
+
+```
+<!-- 左: 設定エリア -->
+<div id="banSettingsCol">
+  <div class="ban-title">🚫 設定 &amp; BAN</div>
+
+  <!-- 難易度 -->
+  <div class="ban-section">
+    <div class="ban-section-label">— 難易度 —</div>
+    <div style="display:flex;gap:6px;">
+      <button class="diff-btn" id="diffEasyBtn"   onclick="setDifficulty('easy')">EASY<br><span>6段積み</span></button>
+      <button class="diff-btn" id="diffNormalBtn" onclick="setDifficulty('normal')">NORMAL<br><span>10段積み</span></button>
+      <button class="diff-btn" id="diffHardBtn"   onclick="setDifficulty('hard')">HARD<br><span>14段積み</span></button>
+    </div>
+  </div>
+
+  <!-- 勝利条件 -->
+  <div class="ban-section">
+    <div class="ban-section-label">— 勝利条件 —</div>
+    <div style="display:flex;gap:6px;">
+      <button class="win-btn" id="winClearAllBtn"    onclick="setWinMode('clear_all')">全消し<br><span>盤面を空に</span></button>
+      <button class="win-btn" id="winLineTargetBtn"  onclick="setWinMode('line_target')">ライン<br><span id="winLineLabel">10ライン</span></button>
+      <button class="win-btn" id="winHeightTargetBtn"onclick="setWinMode('height_target')">高さ<br><span id="winHeightLabel">3段以下</span></button>
+    </div>
+  </div>
+
+  <!-- BAN グリッド -->
+  <div class="ban-sub" id="banScreenSub">除外したい項目をタップ</div>
+  <div class="ban-count">BAN中: <b id="banCountVal">0</b> 項目</div>
+  <div class="ban-grid" id="banGrid"></div>
+
+  <button class="btn btn-p" style="max-width:100%;margin-top:6px;font-size:.75rem;padding:14px 0;" onclick="startGame()">▶ ゲームスタート</button>
+  <button class="btn btn-s" style="max-width:100%;font-size:.7rem;padding:10px 0;" onclick="showScreen('titleScreen')">← 戻る</button>
+</div>
+
+<!-- 右: ミニマップ（ゲーム中サイドバーと同デザイン） -->
+<div id="banSidebar">
+  <div class="sb-label">初期盤面</div>
+  <div id="banMinimapWrap">
+    <canvas id="banMinimapCanvas"></canvas>
+    <div id="banMinimapBar"><div id="banMinimapBarFill"></div></div>
+  </div>
+  <div class="sb-stat"><span id="banSbRemain">—</span><span class="sb-unit">段</span></div>
+  <div class="sb-stat" style="color:var(--dim);font-size:.55rem;"><span id="banSbCells">—</span><span class="sb-unit">セル</span></div>
+  <button id="banRegenBtn" onclick="regenPreview()">🔄<br><span style="font-size:.42rem;letter-spacing:.04em;">別パターン</span></button>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- GAME -->
+
+<div class="screen" id="gameScreen">
+  <div id="hud">
+    <div class="hud-logo" id="hudLogo">🍽️ 大食いテトリス</div>
+    <div class="hud-stats">
+      <div class="hud-st"><span class="hl">SCORE</span><span class="hv" id="hudScore" style="color:var(--gold)">0</span></div>
+      <div class="hud-st"><span class="hl">LINES</span><span class="hv" id="hudLines" style="color:var(--cyan)">0</span></div>
+      <div class="hud-st"><span class="hl">TURNS</span><span class="hv" id="hudTurns" style="color:var(--green)">0</span></div>
+    </div>
+  </div>
+
+  <!-- 非表示（JS参照用） -->
+
+  <div style="display:none">
+    <span id="phaseVal"></span>
+    <span id="phaseGoal"></span>
+    <span id="miniLabel"></span>
+    <canvas id="miniPiece" width="40" height="30"></canvas>
+  </div>
+
+  <!-- ゲームエリア：盤面 + 右サイドバー -->
+
+  <div id="gameArea">
+    <div id="boardWrap">
+      <canvas id="gameCanvas"></canvas>
+      <div id="swipeGuide">
+        <span>← → 移動</span>
+        <span class="guide-sep">｜</span>
+        <span>タップ 回転</span>
+        <span class="guide-sep">｜</span>
+        <span>↓ 即着地</span>
+        <span class="guide-sep">｜</span>
+        <span>長押し ⚡速落下</span>
+      </div>
+    </div>
+
+```
+<!-- 右サイドバー：ミニマップ常時表示 -->
+<div id="sidebar">
+  <div class="sb-label">盤面</div>
+  <div id="minimapWrap">
+    <canvas id="minimapCanvas"></canvas>
+    <!-- 残り段数バー -->
+    <div id="minimapBar">
+      <div id="minimapBarFill"></div>
+    </div>
+  </div>
+  <div class="sb-stat"><span id="sbRemain">—</span><span class="sb-unit">段</span></div>
+  <div class="sb-stat" style="color:var(--cyan)"><span id="sbLines">0</span><span class="sb-unit">L</span></div>
+</div>
+```
+
+  </div>
+
+  <div id="controls">
+    <button class="ctrl" id="btnPause">⏸</button>
+  </div>
+</div>
+
+<!-- RESULT -->
+
+<div class="screen" id="resultScreen">
+  <div class="res-title" id="resTitle">GAME OVER</div>
+  <div class="res-cards">
+    <div class="res-card"><span class="rc-lbl">SCORE</span><span class="rc-val" id="rcScore" style="color:var(--gold)">0</span></div>
+    <div class="res-card"><span class="rc-lbl">LINES</span><span class="rc-val" id="rcLines" style="color:var(--cyan)">0</span></div>
+    <div class="res-card"><span class="rc-lbl">TURNS</span><span class="rc-val" id="rcTurns" style="color:var(--green)">0</span></div>
+    <div class="res-card"><span class="rc-lbl">BLOCKS</span><span class="rc-val" id="rcBlocks">0</span></div>
+  </div>
+  <div class="res-sub" id="resSub"></div>
+  <button class="btn btn-p" style="max-width:280px;" onclick="showBanScreen()">もう一度</button>
+  <button class="btn btn-s" style="max-width:280px;" onclick="showScreen('titleScreen')">タイトルへ</button>
+</div>
+
+<!-- ROULETTE (再構築) -->
+
+<div id="rouletteOverlay">
+
+  <!-- 右上ミニマップ -->
+
+  <div id="rlMinimap">
+    <div class="rl-mm-label">盤面</div>
+    <div id="rlMinimapWrap">
+      <canvas id="rlMinimapCanvas"></canvas>
+      <div id="rlMinimapBar"><div id="rlMinimapBarFill"></div></div>
+    </div>
+    <div id="rlMmRemain" class="rl-mm-stat">—<span class="rl-mm-unit">段</span></div>
+  </div>
+
+  <div class="rl-ttl">✦ ROULETTE ✦</div>
+
+  <!-- ドラム本体 -->
+
+  <div class="rl-drum-wrap" id="rlDrumWrap">
+    <!-- 左右フェード -->
+    <div class="rl-fade-l"></div>
+    <div class="rl-fade-r"></div>
+    <!-- 選択枠（中央固定） -->
+    <div class="rl-selector" id="rlSelector"></div>
+    <!-- スクロールトラック -->
+    <div class="rl-drum-track" id="rlDrumTrack"></div>
+  </div>
+
+  <!-- 結果表示 -->
+
+  <div class="rl-result" id="rlResult"></div>
+
+  <!-- FREE選択UI -->
+
+  <div id="pieceSel">
+    <div class="ps-lbl">ピースを選んでください</div>
+    <div class="ps-grid" id="psGrid"></div>
+  </div>
+
+<button id="spinBtn" onclick="doSpin()">🎰 SPIN !</button>
+
+</div>
+
+<div id="lineFlash"></div>
+<div id="swipeFeedback"></div>
+
+<script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  CONFIG  (TICKET-10)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const CFG = {
+  COLS: 10, ROWS: 20,
+  RL_DUR: 2600,
+  ITEM_W: 88,
+  // スコア: 消去ライン数に応じて倍率が大きく上がる
+  // 1ライン=100 / 2ライン=400 / 3ライン=900 / 4ライン=2000
+  SCORE_TABLE: [0, 100, 400, 900, 2000],
+  DROP_MS: 800,
+  BAN_MODE: 'per_turn', // 毎ターンBANモード固定
+  DIFFICULTY: 'normal',
+  DIFF_PARAMS: {
+    easy:   { fillRows: 6,  minHoles: 2, maxHoles: 3, topClear: 6 },
+    normal: { fillRows: 10, minHoles: 1, maxHoles: 2, topClear: 4 },
+    hard:   { fillRows: 14, minHoles: 1, maxHoles: 1, topClear: 3 },
+  },
+  // チケットB: 勝利条件
+  // 'clear_all'    … 盤面を完全に空にする（全消し）
+  // 'line_target'  … 規定ライン数を消去する
+  // 'height_target'… 盤面の最高積みを規定段数以下に削減する
+  WIN_MODE: 'clear_all',
+  WIN_LINE_TARGET:   10,  // line_target時の目標消去ライン数
+  WIN_HEIGHT_TARGET:  3,  // height_target時の目標残り段数以下
+  // チケットD: スポーン設定
+  SPAWN_GRACE_MS: 500,    // 出現直後に自動落下を遅らせる猶予時間(ms)
+};
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  PIECES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const PIECES = {
+  I:{shape:[[1,1,1,1]],         color:'#ff5555'},
+  O:{shape:[[1,1],[1,1]],        color:'#ff9900'},
+  T:{shape:[[0,1,0],[1,1,1]],    color:'#ffdd00'},
+  S:{shape:[[0,1,1],[1,1,0]],    color:'#44ee55'},
+  Z:{shape:[[1,1,0],[0,1,1]],    color:'#4499ff'},
+  J:{shape:[[1,0,0],[1,1,1]],    color:'#ff55ff'},
+  L:{shape:[[0,0,1],[1,1,1]],    color:'#55ffff'},
+};
+const PNAMES = Object.keys(PIECES);
+
+const ALL_SEGS = [
+  {type:'piece',name:'I',label:'I',    color:'#ff5555'},
+  {type:'piece',name:'O',label:'O',    color:'#ff9900'},
+  {type:'free',            label:'FREE',color:'#ffd700'},
+  {type:'piece',name:'T',label:'T',    color:'#ffdd00'},
+  {type:'piece',name:'S',label:'S',    color:'#44ee55'},
+  {type:'joker',           label:'JOKER',color:'#ff2d78'},
+  {type:'piece',name:'Z',label:'Z',    color:'#4499ff'},
+  {type:'piece',name:'J',label:'J',    color:'#ff55ff'},
+  {type:'piece',name:'L',label:'L',    color:'#55ffff'},
+];
+const segKey = s => s.type==='piece' ? s.name : s.type;
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  STATE
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+let bannedKeys = new Set();
+let board, piece, score, lines, turns, blocksUsed;
+let phase = 'idle';
+let paused = false;
+let CELL = 24;
+let dropTimer = null;
+let banMode = CFG.BAN_MODE;
+let perTurnBanned = new Set();
+let difficulty = CFG.DIFFICULTY;
+let winMode = CFG.WIN_MODE;
+let gameMode = 'standard_reverse'; // 'standard_reverse' | 'gameover_reverse'
+let savedGameOverBoard = null;      // 引き継ぎモード用：通常テトリスのゲームオーバー盤面
+let normalPhaseActive = false;      // 通常テトリスフェーズ中フラグ
+
+const gc = document.getElementById('gameCanvas');
+const gx = gc.getContext('2d');
+const mc = document.getElementById('miniPiece');
+const mx = mc.getContext('2d');
+const mmC = document.getElementById('minimapCanvas'); // ミニマップ
+const mmX = mmC.getContext('2d');
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  SCREEN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  BAN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// タイトル画面ボタンから呼ばれる — モードを切替えてタイトルUIを更新
+function selectBanMode(mode){
+  banMode = mode;
+  document.getElementById('titleModePreBtn') .classList.toggle('active', mode==='pre_game');
+  document.getElementById('titleModeEachBtn').classList.toggle('active', mode==='per_turn');
+}
+
+function showBanScreen(){
+  bannedKeys = new Set();
+
+  // 難易度・勝利条件ボタンを同期
+  setDifficulty(difficulty);
+  setWinMode(winMode);
+
+  // per_turnモード固定: BAN画面ではグリッドを表示しない（毎ターン選ぶため）
+  document.getElementById('banGrid').style.display    = 'none';
+  document.getElementById('banCountVal').parentElement.style.display = 'none';
+  document.getElementById('banScreenSub').innerHTML =
+    '毎ターン開始時にBANを選べます<br>ここでは難易度・勝利条件を設定してください';
+
+  showScreen('banScreen');
+  requestAnimationFrame(()=>{ regenPreview(); });
+}
+
+// T2: effective banned = pre-game banned + per-turn banned
+function activeSeg(){
+  const combined = new Set([...bannedKeys,...perTurnBanned]);
+  return ALL_SEGS.filter(s=>!combined.has(segKey(s)));
+}
+
+function buildBanGrid(){
+  const g = document.getElementById('banGrid');
+  g.innerHTML = '';
+  ALL_SEGS.forEach(seg=>{
+    const key = segKey(seg);
+    const btn = document.createElement('button');
+    btn.className = 'ban-btn'+(bannedKeys.has(key)?' banned':'');
+
+    if(seg.type==='piece'){
+      const cv=document.createElement('canvas');cv.width=54;cv.height=36;
+      miniShape(cv.getContext('2d'),PIECES[seg.name].shape,seg.color,54,36,9);
+      btn.appendChild(cv);
+    } else {
+      const d=document.createElement('div');
+      d.style.cssText='font-size:1.5rem;line-height:1;';
+      d.textContent=seg.type==='free'?'⭐':'🃏';
+      btn.appendChild(d);
+    }
+    const lbl=document.createElement('span');lbl.textContent=seg.label;lbl.style.color=seg.color;btn.appendChild(lbl);
+    const x=document.createElement('div');x.className='ban-x';x.textContent='✕';btn.appendChild(x);
+
+    const toggle=()=>{
+      if(bannedKeys.has(key)){bannedKeys.delete(key);btn.classList.remove('banned');}
+      else{
+        const test=new Set([...bannedKeys,key]);
+        if(ALL_SEGS.filter(s=>!test.has(segKey(s))).length<1)return;
+        bannedKeys.add(key);btn.classList.add('banned');
+      }
+      document.getElementById('banCountVal').textContent=bannedKeys.size;
+    };
+    btn.addEventListener('touchstart',e=>{e.preventDefault();toggle();},{passive:false});
+    btn.addEventListener('mousedown',toggle);
+    g.appendChild(btn);
+  });
+  document.getElementById('banCountVal').textContent=bannedKeys.size;
+}
+
+// チケットB: 勝利モード切替
+function setWinMode(mode){
+  winMode = mode;
+  ['clear_all','line_target','height_target'].forEach(k=>{
+    const id = {clear_all:'winClearAllBtn',line_target:'winLineTargetBtn',height_target:'winHeightTargetBtn'}[k];
+    document.getElementById(id).classList.toggle('active', k===mode);
+  });
+}
+
+// チケットB: 目標進捗を表示
+function updateGoalDisplay(){
+  const el = document.getElementById('phaseGoal');
+  if(!el) return;
+  if(winMode === 'clear_all'){
+    const rem = remainingRows();
+    el.textContent = rem > 0 ? `残${rem}段` : '🎯';
+  } else if(winMode === 'line_target'){
+    el.textContent = `${lines}/${CFG.WIN_LINE_TARGET}L`;
+  } else {
+    const h = boardMaxHeight();
+    el.textContent = `高${h}→${CFG.WIN_HEIGHT_TARGET}以下`;
+  }
+}
+
+// 盤面の最高積み段数を返す
+function boardMaxHeight(){
+  for(let r=0;r<CFG.ROWS;r++){
+    if(board[r].some(c=>c!==0)) return CFG.ROWS - r;
+  }
+  return 0;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  GAME INIT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// T4: Set difficulty, update UI, refresh preview
+function setDifficulty(d){
+  difficulty = d;
+  ['easy','normal','hard'].forEach(k=>{
+    document.getElementById('diff'+k.charAt(0).toUpperCase()+k.slice(1)+'Btn')
+      .classList.toggle('active', k===d);
+  });
+  // Refresh preview only when BAN screen is visible
+  if(document.getElementById('banScreen').classList.contains('active')){
+    regenPreview();
+  }
+}
+
+// Preview board state (generated on BAN screen, reused when game starts)
+let previewBoard = null;
+
+// BAN画面ミニマップ: previewBoard を生成して banMinimap に描画
+function regenPreview(){
+  previewBoard = generateInitialBoard();
+  drawBanMinimap(previewBoard);
+}
+
+// ゲーム中サイドバーと同じデザインでBAN画面に描画
+function drawBanMinimap(b){
+  const cv = document.getElementById('banMinimapCanvas');
+  if(!cv || !b) return;
+  const cs = 4;
+  drawMinimapTo(cv, cv.getContext('2d'), b, null, cs);
+  const filledRows = b.filter(row => row.some(c => c !== 0)).length;
+  const filledCells = b.reduce((s,row) => s + row.filter(c => c !== 0).length, 0);
+  const pct = filledRows / CFG.ROWS;
+  document.getElementById('banMinimapBarFill').style.height = (pct * 100) + '%';
+  document.getElementById('banSbRemain').textContent = filledRows;
+  document.getElementById('banSbCells').textContent  = filledCells;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  チケット4: 初期盤面テンプレート再設計
+//  - holes[c] = [下から1段目, 下から3段目, ...] の穴位置（絶対指定）
+//  - holeBias = 残留ランダム穴率（ほぼ0で意図的な盤面を維持）
+//  - theme    = 攻略テーマ
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const TEMPLATES = {
+
+  // ═══ EASY ═══
+  easy: [
+    {
+      // 全体が均等に低く積まれている・下2行が消しやすい
+      theme: 'one_shot',
+      heights: [4,5,4,5,4,5,4,5,4,5],
+      holes: {0:[2],1:[],2:[],3:[2],4:[],5:[],6:[2],7:[],8:[],9:[2]},
+      holeBias: 0,
+    },
+    {
+      // 全体が同じ高さ・中央2列だけ1段低い
+      theme: 'center_gap',
+      heights: [5,5,5,5,3,3,5,5,5,5],
+      holes: {0:[],1:[3],2:[],3:[],4:[],5:[],6:[],7:[],8:[3],9:[]},
+      holeBias: 0,
+    },
+    {
+      // 緩やかな山型・全列に均等配置
+      theme: 'gentle_hill',
+      heights: [3,4,5,6,6,6,5,4,3,4],
+      holes: {0:[],1:[2],2:[],3:[3],4:[],5:[],6:[3],7:[],8:[2],9:[]},
+      holeBias: 0,
+    },
+    {
+      // 全体フラット・穴が少なく攻略しやすい
+      theme: 'flat',
+      heights: [5,5,5,5,5,5,5,5,5,5],
+      holes: {0:[2],1:[],2:[3],3:[],4:[2],5:[],6:[3],7:[],8:[2],9:[]},
+      holeBias: 0,
+    },
+  ],
+
+  // ═══ NORMAL ═══
+  normal: [
+    {
+      // 全体が高め・中央が少し飛び出している
+      theme: 'center_tower',
+      heights: [7,8,8,9,10,10,9,8,8,7],
+      holes: {0:[3],1:[],2:[4],3:[5],4:[3],5:[3],6:[5],7:[4],8:[],9:[3]},
+      holeBias: 0,
+    },
+    {
+      // 両端が高く中央が低いU字型・全列に配置
+      theme: 'valley',
+      heights: [9,8,7,5,4,4,5,7,8,9],
+      holes: {0:[4],1:[3],2:[3],3:[2],4:[],5:[],6:[2],7:[3],8:[3],9:[4]},
+      holeBias: 0,
+    },
+    {
+      // 全体がほぼ均等な高さ・規則的な穴
+      theme: 'uniform',
+      heights: [8,8,9,8,9,8,9,8,9,8],
+      holes: {0:[3],1:[4],2:[3],3:[4],4:[3],5:[4],6:[3],7:[4],8:[3],9:[4]},
+      holeBias: 0,
+    },
+    {
+      // 左右対称の波型・全列にブロック
+      theme: 'wave',
+      heights: [6,9,7,9,7,7,9,7,9,6],
+      holes: {0:[3],1:[4],2:[3],3:[5],4:[3],5:[3],6:[5],7:[3],8:[4],9:[3]},
+      holeBias: 0,
+    },
+    {
+      // ゆるやかな右肩上がり・全列にブロック
+      theme: 'ramp',
+      heights: [6,6,7,7,8,8,9,9,10,10],
+      holes: {0:[3],1:[],2:[3],3:[4],4:[3],5:[4],6:[4],7:[5],8:[3],9:[5]},
+      holeBias: 0,
+    },
+  ],
+
+  // ═══ HARD ═══
+  hard: [
+    {
+      // 全体が高く均等・1列だけ低い逃げ道
+      theme: 'fortress',
+      heights: [13,13,14,13,14,13,14,13,14,5],
+      holes: {
+        0:[4],1:[5],2:[4],3:[6],4:[4],
+        5:[5],6:[4],7:[6],8:[5],9:[1]
+      },
+      holeBias: 0,
+    },
+    {
+      // 全体高め・中央がわずかに低いクレーター
+      theme: 'crater',
+      heights: [13,12,11,10,8,8,10,11,12,13],
+      holes: {
+        0:[4],1:[4],2:[3],3:[3],4:[2],
+        5:[2],6:[3],7:[3],8:[4],9:[4]
+      },
+      holeBias: 0,
+    },
+    {
+      // 全列均等に高い壁・規則的な穴
+      theme: 'great_wall',
+      heights: [13,14,13,14,13,14,13,14,13,14],
+      holes: {
+        0:[4],1:[5],2:[4],3:[6],4:[4],
+        5:[5],6:[4],7:[6],8:[4],9:[5]
+      },
+      holeBias: 0,
+    },
+    {
+      // 全体高め・左右対称の砂時計
+      theme: 'hourglass',
+      heights: [13,11,10,9,7,7,9,10,11,13],
+      holes: {
+        0:[5],1:[4],2:[3],3:[3],4:[2],
+        5:[2],6:[3],7:[3],8:[4],9:[5]
+      },
+      holeBias: 0,
+    },
+    {
+      // 全列ほぼ満タン・わずかな穴が命綱
+      theme: 'last_chance',
+      heights: [13,14,13,14,13,14,13,14,13,14],
+      holes: {
+        0:[3],1:[4],2:[5],3:[3],4:[4],
+        5:[5],6:[3],7:[4],8:[5],9:[3]
+      },
+      holeBias: 0,
+    },
+  ],
+};
+
+// ─── テンプレートから盤面を生成 ──────────────────────────
+function generateInitialBoard(){
+  const ROWS = CFG.ROWS;
+  const COLS = CFG.COLS;
+  const {topClear} = CFG.DIFF_PARAMS[difficulty];
+  const colors = PNAMES.map(n => PIECES[n].color);
+
+  // テンプレートをランダムに1つ選ぶ
+  const templates = TEMPLATES[difficulty];
+  const tpl = templates[Math.floor(Math.random() * templates.length)];
+
+  // ① 高さ配列をクランプ（topClearより上に出ないように）
+  const maxAllowed = ROWS - topClear;
+  const heights = tpl.heights.map(h => Math.min(h, maxAllowed));
+
+  // ② 空盤面から構築
+  const board = Array.from({length: ROWS}, () => Array(COLS).fill(0));
+
+  // ③ 各列を下から heights[c] セル分埋める
+  for(let c = 0; c < COLS; c++){
+    for(let i = 0; i < heights[c]; i++){
+      const r = ROWS - 1 - i;
+      board[r][c] = colors[Math.floor(Math.random() * colors.length)];
+    }
+  }
+
+  // ④ チケット4: 絶対穴位置を適用（holes[c] = 下からN段目の空けるリスト）
+  if(tpl.holes){
+    for(let c = 0; c < COLS; c++){
+      const hList = tpl.holes[c] || [];
+      hList.forEach(fromBottom => {
+        const r = ROWS - fromBottom; // 下からfromBottom段目の行
+        if(r >= 0 && r < ROWS) board[r][c] = 0;
+      });
+    }
+  }
+
+  // ⑤ 残留ランダム穴（holeBiasが小さいほど意図的な盤面を維持）
+  //    下2行は穴なし、上に向かうほど穴多め
+  if(tpl.holeBias > 0){
+    for(let r = 0; r < ROWS; r++){
+      const rowFactor = 0.5 + (r / ROWS);
+      const prob = tpl.holeBias * rowFactor;
+      for(let c = 0; c < COLS; c++){
+        if(board[r][c] && Math.random() < prob) board[r][c] = 0;
+      }
+    }
+  }
+
+  // ⑥ 完全に埋まった行を検出 → 1列必ず空ける（即消え防止）
+  for(let r = 0; r < ROWS; r++){
+    if(board[r].every(c => c !== 0)){
+      board[r][Math.floor(Math.random() * COLS)] = 0;
+    }
+  }
+
+  // ⑦ topClear行は必ず空（スポーン保証）
+  for(let r = 0; r < topClear; r++) board[r].fill(0);
+
+  // ⑧ 即詰みチェック
+  if(board[0].some(c => c !== 0) || board[1].some(c => c !== 0)){
+    return generateInitialBoard();
+  }
+
+  // ⑨ スカスカ防止
+  if(!board.some(row => row.some(c => c !== 0))) return generateInitialBoard();
+
+  // ⑩ solvabilityチェック
+  if(!checkSolvable(board)) return generateInitialBoard();
+
+  return board;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  ゲームモード選択
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function selectGameMode(mode){
+  gameMode = mode;
+  document.getElementById('gmodeStdBtn').classList.toggle('active', mode==='standard_reverse');
+  document.getElementById('gmodeGoBtn') .classList.toggle('active', mode==='gameover_reverse');
+
+  // ボタン文言・説明文をモード別に切替
+  const startBtn = document.getElementById('titleStartBtn');
+  const desc     = document.getElementById('titleDesc');
+  if(mode === 'standard_reverse'){
+    startBtn.textContent = '▶ 逆テトリスを開始';
+    desc.innerHTML = '<b>ルーレット</b>でブロック決定<br>左右・回転で位置を調整<br>ブロックは<b>自動で落下</b>する<br>ラインを消して<b>全消しを目指せ！</b>';
+  } else {
+    startBtn.textContent = '▶ 通常テトリスから開始';
+    desc.innerHTML = 'まず<b>通常テトリス</b>でブロックを積む<br>ゲームオーバーになった盤面を<b>引き継いで</b><br>そこから<b>逆テトリスで全消し</b>を目指す！';
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  オリエンテーション（チュートリアル）
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const ORIENT_SLIDES = [
+  {
+    title: '🍽️ 大食いテトリスとは？',
+    body: `通常テトリスとは<b>逆</b>！<br>
+最初から積み上がった盤面を<br>
+ブロックを落として<b>ラインを消す</b>ゲームです。<br><br>
+<span class="hi">全消し or 最下段まで到達</span>でクリア！`,
+    draw: drawOrient0,
+  },
+  {
+    title: '🎰 ルーレットでブロック決定',
+    body: `毎ターン<b>ルーレット</b>を回して<br>
+使うブロックが決まります。<br><br>
+<b>FREE</b>：好きなブロックを選べる<br>
+<b>JOKER</b>：このターンは何も起きない`,
+    draw: drawOrient1,
+  },
+  {
+    title: '🚫 BANで不要なブロックを除外',
+    body: `ルーレット前に<b>BAN</b>を選択できます。<br>
+邪魔なブロックをタップして除外！<br><br>
+ただし<span class="hi">1BAN = +1ターン</span>のペナルティ。<br>
+使いすぎに注意しよう。`,
+    draw: drawOrient2,
+  },
+  {
+    title: '👆 操作方法',
+    body: `<b>左右スワイプ</b>　→　ブロック移動<br>
+<b>タップ</b>　→　ブロック回転<br>
+<b>下スワイプ</b>　→　即着地<br>
+<b>長押し</b>　→　⚡ 高速落下`,
+    draw: drawOrient3,
+  },
+  {
+    title: '🏆 勝利条件',
+    body: `以下のどれかを達成するとクリア！<br><br>
+<b>全消し</b>　盤面を完全に空にする<br>
+<b>最下段到達</b>　ブロックが一番下の段だけに<br><br>
+<span class="hi">少ないターン数</span>ほど高スコア！`,
+    draw: drawOrient4,
+  },
+];
+
+let orientIdx = 0;
+
+function showHelp(){
+  orientIdx = 0;
+  buildOrientSlides();
+  document.getElementById('orientOverlay').classList.add('active');
+  updateOrient(0);
+}
+
+function buildOrientSlides(){
+  const container = document.getElementById('orientSlides');
+  container.innerHTML = '';
+  const dots = document.getElementById('orientDots');
+  dots.innerHTML = '';
+
+  ORIENT_SLIDES.forEach((s, i) => {
+    // スライド
+    const slide = document.createElement('div');
+    slide.className = 'o-slide';
+    slide.id = 'oSlide' + i;
+
+    // イラストキャンバス
+    const cv = document.createElement('canvas');
+    cv.className = 'o-illust';
+    cv.width  = 220; cv.height = 160;
+    slide.appendChild(cv);
+
+    // テキスト
+    const ttl = document.createElement('div');
+    ttl.className = 'o-slide-title';
+    ttl.textContent = s.title;
+    slide.appendChild(ttl);
+
+    const body = document.createElement('div');
+    body.className = 'o-slide-body';
+    body.innerHTML = s.body;
+    slide.appendChild(body);
+
+    container.appendChild(slide);
+
+    // ドット
+    const dot = document.createElement('div');
+    dot.className = 'o-dot';
+    dot.id = 'oDot' + i;
+    dots.appendChild(dot);
+  });
+
+  // イラスト描画（DOM確定後）
+  requestAnimationFrame(()=>{
+    ORIENT_SLIDES.forEach((s, i) => {
+      const cv = document.querySelector('#oSlide'+i+' canvas');
+      if(cv && s.draw) s.draw(cv);
+    });
+  });
+}
+
+function updateOrient(idx){
+  ORIENT_SLIDES.forEach((_, i) => {
+    const slide = document.getElementById('oSlide'+i);
+    const dot   = document.getElementById('oDot'+i);
+    slide.classList.toggle('active', i === idx);
+    slide.classList.toggle('exit',   i < idx);
+    dot.classList.toggle('active', i === idx);
+  });
+  // ボタン文言
+  const isLast = idx === ORIENT_SLIDES.length - 1;
+  document.getElementById('orientNext').textContent = isLast ? '✅ はじめる！' : '次へ ▶';
+  document.getElementById('orientPrev').style.visibility = idx === 0 ? 'hidden' : 'visible';
+}
+
+function orientMove(dir){
+  const next = orientIdx + dir;
+  if(next >= ORIENT_SLIDES.length){
+    // 完了 → タイトルへ戻る
+    document.getElementById('orientOverlay').classList.remove('active');
+    return;
+  }
+  if(next < 0) return;
+  orientIdx = next;
+  updateOrient(orientIdx);
+}
+
+// ─── イラスト描画関数 ─────────────────────
+
+// スライド0: 逆テトリスの概念（積み上がり盤面）
+function drawOrient0(cv){
+  const cx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  cx.fillStyle='#060d18'; cx.fillRect(0,0,W,H);
+  const cs=14, cols=10, startX=(W-cols*cs)/2;
+  // グリッド
+  cx.strokeStyle='rgba(20,60,120,.6)'; cx.lineWidth=.5;
+  for(let r=0;r<=8;r++){cx.beginPath();cx.moveTo(startX,20+r*cs);cx.lineTo(startX+cols*cs,20+r*cs);cx.stroke();}
+  for(let c=0;c<=cols;c++){cx.beginPath();cx.moveTo(startX+c*cs,20);cx.lineTo(startX+c*cs,20+8*cs);cx.stroke();}
+  // ブロック（下5行に積み上がり）
+  const colors=['#ff5555','#ff9900','#ffdd00','#44ee55','#4499ff','#ff55ff','#55ffff'];
+  const pattern=[
+    [1,1,1,1,1,1,1,1,1,1],
+    [1,1,0,1,1,1,0,1,1,1],
+    [1,1,1,1,0,1,1,1,1,1],
+    [0,1,1,1,1,1,1,0,1,1],
+    [1,1,1,0,1,1,1,1,1,1],
+  ];
+  pattern.forEach((row,r)=>row.forEach((v,c)=>{
+    if(!v)return;
+    cx.fillStyle=colors[(r*3+c)%colors.length];
+    cx.fillRect(startX+c*cs+1,(20+(r+3)*cs)+1,cs-2,cs-2);
+    cx.fillStyle='rgba(255,255,255,.2)';
+    cx.fillRect(startX+c*cs+1,(20+(r+3)*cs)+1,cs-2,3);
+  }));
+  // 矢印「消す！」
+  cx.fillStyle='#00e5ff'; cx.font='bold 11px monospace';
+  cx.textAlign='center'; cx.fillText('▼ ラインを消す！',W/2,18);
+}
+
+// スライド1: ルーレット
+function drawOrient1(cv){
+  const cx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  cx.fillStyle='#060d18'; cx.fillRect(0,0,W,H);
+  const items=[
+    {label:'I',color:'#ff5555',shape:[[1,1,1,1]]},
+    {label:'T',color:'#ffdd00',shape:[[0,1,0],[1,1,1]]},
+    {label:'O',color:'#ff9900',shape:[[1,1],[1,1]]},
+  ];
+  const iw=52,ih=52,gap=10,total=items.length;
+  const startX=(W-total*(iw+gap)+gap)/2;
+  items.forEach((item,i)=>{
+    const x=startX+i*(iw+gap), y=(H-ih)/2;
+    const isCenter=(i===1);
+    // 枠
+    cx.fillStyle=isCenter?'rgba(255,45,120,.15)':'#16162a';
+    cx.strokeStyle=isCenter?'#ff2d78':'#2a2a50';
+    cx.lineWidth=isCenter?2.5:1.5;
+    roundRect(cx,x,y,iw,ih,8);cx.fill();cx.stroke();
+    // ミニピース描画
+    const cs=8;
+    const sh=item.shape;
+    const pw=sh[0].length*cs, ph=sh.length*cs;
+    const ox=x+(iw-pw)/2, oy=y+(ih-ph)/2-4;
+    sh.forEach((row,r)=>row.forEach((v,c)=>{
+      if(!v)return;
+      cx.fillStyle=item.color;
+      cx.fillRect(ox+c*cs,oy+r*cs,cs-1,cs-1);
+    }));
+    cx.fillStyle=item.color; cx.font='bold 10px Orbitron,monospace';
+    cx.textAlign='center'; cx.fillText(item.label,x+iw/2,y+ih-6);
+    // 中央に選択枠
+    if(isCenter){
+      cx.strokeStyle='#ff2d78'; cx.lineWidth=2;
+      roundRect(cx,x-2,y-2,iw+4,ih+4,10); cx.stroke();
+    }
+  });
+  cx.fillStyle='#ffd700'; cx.font='bold 11px monospace';
+  cx.textAlign='center'; cx.fillText('🎰 SPINしてブロック決定！',W/2,H-10);
+}
+
+// スライド2: BAN
+function drawOrient2(cv){
+  const cx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  cx.fillStyle='#060d18'; cx.fillRect(0,0,W,H);
+  const items=[
+    {label:'I',color:'#ff5555',banned:true},
+    {label:'S',color:'#44ee55',banned:false},
+    {label:'Z',color:'#4499ff',banned:true},
+    {label:'O',color:'#ff9900',banned:false},
+  ];
+  const iw=40,ih=40,gap=8;
+  const startX=(W-items.length*(iw+gap)+gap)/2;
+  items.forEach((item,i)=>{
+    const x=startX+i*(iw+gap), y=H/2-ih/2-10;
+    cx.fillStyle=item.banned?'rgba(255,45,120,.1)':'#16162a';
+    cx.strokeStyle=item.banned?'#ff2d78':'#2a2a50';
+    cx.lineWidth=1.5;
+    roundRect(cx,x,y,iw,ih,7);cx.fill();cx.stroke();
+    cx.fillStyle=item.color; cx.font='bold 14px Orbitron,monospace';
+    cx.textAlign='center'; cx.fillText(item.label,x+iw/2,y+ih/2+5);
+    if(item.banned){
+      cx.fillStyle='rgba(255,45,120,.3)';
+      roundRect(cx,x,y,iw,ih,7);cx.fill();
+      cx.fillStyle='#ff2d78'; cx.font='bold 18px sans-serif';
+      cx.textAlign='center'; cx.fillText('✕',x+iw/2,y+ih/2+6);
+    }
+  });
+  cx.fillStyle='#ff2d78'; cx.font='bold 10px monospace';
+  cx.textAlign='center'; cx.fillText('BANしたブロックはルーレットから除外',W/2,H-28);
+  cx.fillStyle='#ffdd00'; cx.font='10px monospace';
+  cx.fillText('⚠ 1BAN = +1ターンのペナルティ',W/2,H-12);
+}
+
+// スライド3: 操作方法
+function drawOrient3(cv){
+  const cx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  cx.fillStyle='#060d18'; cx.fillRect(0,0,W,H);
+  const ops=[
+    {icon:'◀  ▶',label:'スワイプ移動',color:'#00e5ff'},
+    {icon:'👆',   label:'タップ回転',  color:'#ffd700'},
+    {icon:'⬇',   label:'下スワイプ即着地',color:'#ff5555'},
+    {icon:'✋',   label:'長押し高速落下',color:'#39ff14'},
+  ];
+  const rowH=34, startY=(H-ops.length*rowH)/2;
+  ops.forEach((op,i)=>{
+    const y=startY+i*rowH;
+    // アイコン背景
+    cx.fillStyle='#16162a'; cx.strokeStyle='#2a2a50'; cx.lineWidth=1;
+    roundRect(cx,10,y,50,28,6); cx.fill(); cx.stroke();
+    cx.fillStyle=op.color; cx.font='bold 13px sans-serif';
+    cx.textAlign='center'; cx.fillText(op.icon,35,y+19);
+    // ラベル
+    cx.fillStyle=op.color; cx.font='bold 11px monospace';
+    cx.textAlign='left'; cx.fillText(op.label,70,y+19);
+  });
+}
+
+// スライド4: 勝利条件
+function drawOrient4(cv){
+  const cx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  cx.fillStyle='#060d18'; cx.fillRect(0,0,W,H);
+  const cs=10, cols=10, startX=(W-cols*cs)/2;
+  // 空盤面（全消しイメージ）
+  cx.strokeStyle='rgba(20,60,120,.6)'; cx.lineWidth=.5;
+  for(let r=0;r<=6;r++){cx.beginPath();cx.moveTo(startX,15+r*cs);cx.lineTo(startX+cols*cs,15+r*cs);cx.stroke();}
+  for(let c=0;c<=cols;c++){cx.beginPath();cx.moveTo(startX+c*cs,15);cx.lineTo(startX+c*cs,15+6*cs);cx.stroke();}
+  // 最下段だけブロック
+  const colors=['#ff5555','#ff9900','#ffdd00','#44ee55','#4499ff','#ff55ff','#55ffff'];
+  for(let c=0;c<cols;c++){
+    cx.fillStyle=colors[c%colors.length];
+    cx.fillRect(startX+c*cs+1,15+5*cs+1,cs-2,cs-2);
+  }
+  // クリアテキスト
+  cx.fillStyle='#ffd700'; cx.font='bold 13px Orbitron,monospace';
+  cx.textAlign='center'; cx.fillText('🏆 CLEAR!',W/2,H/2+10);
+  cx.fillStyle='#00e5ff'; cx.font='10px monospace';
+  cx.fillText('最下段のみ残った状態でクリア',W/2,H-20);
+  cx.fillText('全消し or 最下段到達 が目標！',W/2,H-6);
+}
+
+// 角丸矩形ヘルパー
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+function startGame(){
+  showScreen('gameScreen');
+  requestAnimationFrame(()=>{
+    resizeBoard();
+    score=0;lines=0;turns=0;blocksUsed=0;piece=null;paused=false;
+    perTurnBanned=new Set();
+
+    if(gameMode === 'gameover_reverse'){
+      // 引き継ぎモード: まず通常テトリスフェーズへ
+      startNormalPhase();
+    } else {
+      // 現行モード: 逆テトリス直接開始
+      board = previewBoard ? previewBoard : generateInitialBoard();
+      previewBoard = null;
+      updateHUD();drawBoard();drawMini(null);
+      updateGoalDisplay();
+      document.getElementById('phaseVal').style.color = 'var(--cyan)';
+      setPhase('roulette');
+      beginTurn();
+    }
+  });
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  通常テトリスフェーズ（引き継ぎモード専用）
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function startNormalPhase(){
+  normalPhaseActive = true;
+  savedGameOverBoard = null;
+
+  // 空盤面から開始
+  board = Array.from({length: CFG.ROWS}, () => Array(CFG.COLS).fill(0));
+
+  // HUD文言・ロゴ切替
+  document.getElementById('hudLogo').textContent = '🎮 NORMAL MODE';
+  document.getElementById('phaseVal').style.color = 'var(--green)';
+  document.getElementById('phaseVal').textContent = '🎮 通常テトリス中';
+  document.getElementById('phaseGoal').textContent = '積め！';
+
+  updateHUD(); drawBoard(); drawMini(null);
+  setPhase('move');
+
+  // 通常テトリス: 連続ピース供給
+  normalSpawnNext();
+}
+
+function normalSpawnNext(){
+  if(!normalPhaseActive) return;
+  const name = PNAMES[Math.floor(Math.random() * PNAMES.length)];
+  const p = PIECES[name];
+  const sh = p.shape.map(r=>[...r]);
+  const cx = Math.floor((CFG.COLS - sh[0].length) / 2);
+
+  piece = { name, color:p.color, shape:sh, x:cx, y:-sh.length };
+
+  // スポーン不能 or 15段ライン超過でゲームオーバー
+  const NORMAL_GO_ROW = CFG.ROWS - 15; // = 5
+  const overLimit = board[NORMAL_GO_ROW].some(c => c !== 0);
+  if(!valid(board, piece, 0, 0) || overLimit){
+    normalGameOver();
+    return;
+  }
+
+  // HUD進捗: 現在の積み高さ
+  const stackedRows = board.filter(row => row.some(c => c !== 0)).length;
+  document.getElementById('phaseGoal').textContent = `${stackedRows} / 15段`;
+
+  drawMini(name);
+  drawBoard();
+  startNormalAutoDrop();
+}
+
+function startNormalAutoDrop(){
+  stopAutoDrop();
+  dropTimer = setInterval(()=>{
+    if(paused || phase !== 'move' || !piece || !normalPhaseActive) return;
+    if(valid(board, piece, 0, 1)){
+      piece.y++;
+      drawBoard();
+    } else {
+      normalLockPiece();
+    }
+  }, CFG.DROP_MS);
+}
+
+function normalLockPiece(){
+  stopAutoDrop();
+  if(!piece) return;
+
+  // 着地
+  piece.shape.forEach((row,r) => row.forEach((v,c) => {
+    if(v && piece.y+r >= 0) board[piece.y+r][piece.x+c] = piece.color;
+  }));
+
+  // ゲームオーバー判定: 上から5行目(row4)にブロックが来たら = 15段積んだ状態
+  // ROWS=20 → row4 = 下から16段目 → 15段積んだ高さ
+  const NORMAL_GO_ROW = CFG.ROWS - 15; // = 5
+  if(board[NORMAL_GO_ROW].some(c => c !== 0)){
+    normalGameOver();
+    return;
+  }
+
+  // ライン消去
+  const n = clearLines();
+  score += CFG.SCORE_TABLE[n] || 0;
+  lines += n;
+  if(n > 0){
+    flashBoard();
+    const bonusLabels = ['','SINGLE','DOUBLE','TRIPLE','TETRIS!!'];
+    showFeedback(
+      (bonusLabels[n] || n+'LINE') + '  +' + (CFG.SCORE_TABLE[n]||0),
+      n >= 4 ? 'var(--gold)' : n >= 3 ? 'var(--cyan)' : 'var(--green)'
+    );
+  }
+
+  piece = null;
+  updateHUD(); drawMini(null); drawBoard();
+
+  // 次のピース
+  setTimeout(normalSpawnNext, 150);
+}
+
+function normalGameOver(){
+  if(!normalPhaseActive) return; // 二重呼び出し防止
+  stopAutoDrop();
+  normalPhaseActive = false;
+
+  // ゲームオーバー盤面を保存
+  savedGameOverBoard = board.map(row => [...row]);
+  piece = null;
+  drawBoard();
+
+  // 遷移演出を表示
+  showTransitionOverlay(savedGameOverBoard);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  遷移演出: 通常→逆テトリス（カウントダウン付き）
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function showTransitionOverlay(b){
+  const ov = document.getElementById('transitionOverlay');
+  ov.classList.add('active');
+
+  // ミニマップに盤面を描画
+  const cv = document.getElementById('trMiniCanvas');
+  const cs = 4;
+  drawMinimapTo(cv, cv.getContext('2d'), b, null, cs);
+
+  // カウントダウン: 3→2→1→GO!
+  const countEl = document.getElementById('trCountdown');
+  let count = 3;
+  countEl.textContent = count;
+  countEl.style.opacity = '1';
+
+  const tick = setInterval(()=>{
+    count--;
+    if(count > 0){
+      countEl.textContent = count;
+      // フラッシュ演出
+      countEl.style.transform = 'scale(1.4)';
+      setTimeout(()=>{ countEl.style.transform = 'scale(1)'; }, 200);
+    } else {
+      countEl.textContent = 'START!';
+      countEl.style.color = 'var(--cyan)';
+      clearInterval(tick);
+      setTimeout(()=>{
+        ov.classList.remove('active');
+        // カウントを元に戻す
+        countEl.style.color = 'var(--gold)';
+        startReversePhase();
+      }, 800);
+    }
+  }, 1000);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  逆テトリスフェーズ開始（引き継ぎ）
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function startReversePhase(){
+  // ─── チケット3: 通常フェーズ由来の状態を完全初期化 ───
+  stopAutoDrop();
+  normalPhaseActive = false;
+  piece  = null;
+  paused = false;
+  phase  = 'idle';
+
+  // ─── チケット2: savedGameOverBoard の存在チェック ───
+  if(!savedGameOverBoard){
+    // 保存盤面がない場合はフォールバック: generateInitialBoard() を使う
+    console.warn('savedGameOverBoard is null — falling back to generateInitialBoard()');
+    board = generateInitialBoard();
+  } else {
+    board = savedGameOverBoard.map(row => [...row]);
+  }
+
+  score=0; lines=0; turns=0; blocksUsed=0;
+  perTurnBanned = new Set();
+
+  // HUD文言・ロゴ復元
+  document.getElementById('hudLogo').textContent = '🍽️ 大食いテトリス';
+  document.getElementById('phaseVal').style.color = 'var(--accent)';
+  document.getElementById('phaseVal').textContent = '🎰 GAMEOVER REVERSE';
+
+  updateHUD(); drawBoard(); drawMini(null);
+  updateGoalDisplay();
+  setPhase('roulette');
+  beginTurn();
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  チケットC: SOLVABILITY CHECK
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// (a) BFSで上端から到達不能な空きセルが40%超なら詰み懸念→再生成
+// (b) 少なくとも1つのピース形状でスポーン可能かチェック
+function checkSolvable(b){
+  const ROWS=CFG.ROWS, COLS=CFG.COLS;
+
+  // (a) BFS: row=0の空きセルから4方向に探索
+  const visited=Array.from({length:ROWS},()=>Array(COLS).fill(false));
+  const queue=[];
+  for(let c=0;c<COLS;c++){
+    if(!b[0][c]){visited[0][c]=true;queue.push([0,c]);}
+  }
+  let qi=0;
+  while(qi<queue.length){
+    const [r,c]=queue[qi++];
+    for(const [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const nr=r+dr,nc=c+dc;
+      if(nr<0||nr>=ROWS||nc<0||nc>=COLS)continue;
+      if(visited[nr][nc]||b[nr][nc])continue;
+      visited[nr][nc]=true;
+      queue.push([nr,nc]);
+    }
+  }
+  let totalEmpty=0,reachable=0;
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    if(!b[r][c]){totalEmpty++;if(visited[r][c])reachable++;}
+  }
+  if(totalEmpty>0&&(totalEmpty-reachable)/totalEmpty>0.40) return false;
+
+  // (b) 少なくとも1ピースがスポーン可能か
+  return PNAMES.some(name=>{
+    const p=PIECES[name];
+    const w=p.shape[0].length;
+    for(let x=0;x<=COLS-w;x++){
+      const tmp={x,y:0,shape:p.shape,color:''};
+      for(let tryY=-p.shape.length;tryY<=0;tryY++){
+        tmp.y=tryY;
+        if(valid(b,tmp,0,0)) return true;
+      }
+    }
+    return false;
+  });
+}
+
+function resizeBoard(){
+  const wrap=document.getElementById('boardWrap');
+  const aw=wrap.clientWidth-10, ah=wrap.clientHeight-10;
+  const bw=Math.floor(aw/CFG.COLS), bh=Math.floor(ah/CFG.ROWS);
+  CELL=Math.max(16,Math.min(bw,bh,32));
+  gc.width=CFG.COLS*CELL;gc.height=CFG.ROWS*CELL;
+}
+
+// 毎ターン: BAN選択 → ルーレット（per_turn固定）
+function beginTurn(){
+  perTurnBanned = new Set();
+  showPerTurnBan();
+}
+
+function showPerTurnBan(){
+  let ov = document.getElementById('perTurnBanOv');
+  if(!ov){
+    ov = document.createElement('div');
+    ov.id = 'perTurnBanOv';
+    document.body.appendChild(ov);
+  }
+  // overflow:hidden で絶対にスクロールさせない
+  ov.style.cssText = [
+    'position:fixed;inset:0;z-index:49;',
+    'background:rgba(8,8,16,.97);',
+    'display:flex;flex-direction:column;align-items:center;justify-content:space-between;',
+    'padding:10px 14px;gap:6px;overflow:hidden;',
+    'box-sizing:border-box;',
+  ].join('');
+  ov.innerHTML = '';
+
+  // ── タイトル ──
+  const ttl = document.createElement('div');
+  ttl.style.cssText = 'font-family:"Orbitron",monospace;font-size:.82rem;font-weight:900;color:#ff2d78;letter-spacing:.2em;flex-shrink:0;';
+  ttl.textContent = '🚫 このターンのBAN';
+  ov.appendChild(ttl);
+
+  const sub = document.createElement('div');
+  sub.style.cssText = 'font-size:.5rem;color:#55558a;text-align:center;line-height:1.5;flex-shrink:0;';
+  sub.textContent = 'このターンだけ除外したい項目をタップ（次ターンにはリセット）';
+  ov.appendChild(sub);
+
+  // ── BAN グリッド（縮小気味に固定） ──
+  const grid = document.createElement('div');
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:320px;flex-shrink:0;';
+
+  ALL_SEGS.forEach(seg=>{
+    const key = segKey(seg);
+    const btn = document.createElement('button');
+    btn.style.cssText = 'background:#16162a;border:2px solid #2a2a50;border-radius:10px;padding:6px 3px 5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;color:#eeeeff;font-family:"Orbitron",monospace;font-size:.6rem;position:relative;';
+
+    if(seg.type==='piece'){
+      const cv=document.createElement('canvas');cv.width=46;cv.height=28;
+      miniShape(cv.getContext('2d'),PIECES[seg.name].shape,seg.color,46,28,8);
+      btn.appendChild(cv);
+    } else {
+      const d=document.createElement('div');d.style.cssText='font-size:1.2rem;line-height:1;';
+      d.textContent=seg.type==='free'?'⭐':'🃏';btn.appendChild(d);
+    }
+    const lbl=document.createElement('span');lbl.textContent=seg.label;lbl.style.color=seg.color;btn.appendChild(lbl);
+    const xd=document.createElement('div');
+    xd.style.cssText='display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:1.5rem;border-radius:8px;background:rgba(255,45,120,.22);color:#ff2d78;';
+    xd.textContent='✕';btn.appendChild(xd);
+
+    const refresh=()=>{
+      const banned=perTurnBanned.has(key);
+      btn.style.background=banned?'rgba(255,45,120,.1)':'#16162a';
+      btn.style.borderColor=banned?'#ff2d78':'#2a2a50';
+      btn.style.opacity=banned?'.5':'1';
+      xd.style.display=banned?'flex':'none';
+    };
+    const toggle=()=>{
+      if(perTurnBanned.has(key)){
+        perTurnBanned.delete(key);
+      } else {
+        const combined=new Set([...bannedKeys,...perTurnBanned,key]);
+        if(ALL_SEGS.filter(s=>!combined.has(segKey(s))).length<1)return;
+        perTurnBanned.add(key);
+      }
+      refresh();
+    };
+    btn.addEventListener('touchstart',e=>{e.preventDefault();toggle();},{passive:false});
+    btn.addEventListener('mousedown',toggle);
+    grid.appendChild(btn);
+  });
+  ov.appendChild(grid);
+
+  // ── ミニマップ（残りの高さを全部使う・大きく・見やすく） ──
+  const mmSection = document.createElement('div');
+  mmSection.style.cssText = [
+    'width:100%;max-width:320px;',
+    'flex:1;min-height:0;',
+    'display:flex;flex-direction:column;',
+    'gap:6px;',
+  ].join('');
+
+  // 上: 数値情報バー（横並び）
+  const mmInfo = document.createElement('div');
+  mmInfo.style.cssText = [
+    'display:flex;align-items:center;justify-content:space-between;',
+    'background:#0d1a2e;border:1px solid #1a3a5c;border-radius:8px;',
+    'padding:6px 10px;flex-shrink:0;',
+  ].join('');
+
+  const mmLabel = document.createElement('div');
+  mmLabel.style.cssText = 'font-family:"Orbitron",monospace;font-size:.48rem;color:#4488aa;letter-spacing:.15em;';
+  mmLabel.textContent = '📊 現在の盤面';
+  mmInfo.appendChild(mmLabel);
+
+  const rem = board ? board.filter(row=>row.some(c=>c!==0)).length : 0;
+
+  const mmStats = document.createElement('div');
+  mmStats.style.cssText = 'display:flex;gap:12px;align-items:center;';
+
+  const mmRemain = document.createElement('div');
+  mmRemain.style.cssText = 'font-family:"Orbitron",monospace;font-size:1rem;font-weight:700;color:#00ff88;line-height:1;';
+  mmRemain.innerHTML = `${rem}<span style="font-size:.42rem;color:#4488aa;margin-left:2px;">段</span>`;
+  mmStats.appendChild(mmRemain);
+
+  const mmLinesEl = document.createElement('div');
+  mmLinesEl.style.cssText = 'font-family:"Orbitron",monospace;font-size:.88rem;font-weight:700;color:#00e5ff;line-height:1;';
+  mmLinesEl.innerHTML = `${lines??0}<span style="font-size:.42rem;color:#4488aa;margin-left:2px;">L消去</span>`;
+  mmStats.appendChild(mmLinesEl);
+
+  mmInfo.appendChild(mmStats);
+  mmSection.appendChild(mmInfo);
+
+  // 下: ミニマップキャンバス本体（flex:1で残り高さを全部使う）
+  const mmWrap = document.createElement('div');
+  mmWrap.style.cssText = [
+    'flex:1;min-height:0;position:relative;',
+    'border:2px solid #1a4060;border-radius:8px;',
+    'overflow:hidden;',
+    'background:#060d18;',
+    'box-shadow:0 0 0 1px #0a2040, inset 0 0 20px rgba(0,100,200,.15), 0 0 15px rgba(0,150,255,.1);',
+    'display:flex;align-items:center;justify-content:center;', // 中央配置
+  ].join('');
+
+  const mmCv = document.createElement('canvas');
+  mmCv.id = 'perTurnMmCanvas';
+  mmCv.style.cssText = 'display:block;image-rendering:pixelated;';
+  mmWrap.appendChild(mmCv);
+
+  // 残り段数ゲージバー（右端・シアン系に変更）
+  const mmBar = document.createElement('div');
+  mmBar.style.cssText = 'position:absolute;top:0;right:0;bottom:0;width:5px;background:rgba(0,50,100,.4);';
+  const mmFill = document.createElement('div');
+  mmFill.id = 'perTurnMmFill';
+  mmFill.style.cssText = [
+    'position:absolute;bottom:0;left:0;right:0;',
+    'background:linear-gradient(to top, #ff2d78, #ff6b35);',
+    'box-shadow:0 0 8px rgba(255,45,120,.7);',
+    'transition:height .3s ease;',
+  ].join('');
+  mmBar.appendChild(mmFill);
+  mmWrap.appendChild(mmBar);
+
+  mmSection.appendChild(mmWrap);
+  ov.appendChild(mmSection);
+
+  // ── ルーレットへボタン ──
+  const okBtn = document.createElement('button');
+  okBtn.style.cssText = 'font-family:"Orbitron",monospace;font-size:.8rem;font-weight:700;letter-spacing:.2em;padding:13px 0;width:100%;max-width:320px;background:#ff2d78;border:none;border-radius:50px;color:#fff;cursor:pointer;box-shadow:0 0 18px rgba(255,45,120,.5);flex-shrink:0;';
+  okBtn.textContent = '🎰 ルーレットへ';
+  const proceed = ()=>{
+    // BAN数に応じてターンを加算（1BAN=+1）
+    if(perTurnBanned.size > 0){
+      turns += perTurnBanned.size;
+      updateHUD();
+    }
+    ov.style.display='none';
+    showRoulette();
+  };
+  okBtn.addEventListener('touchstart',e=>{e.preventDefault();proceed();},{passive:false});
+  okBtn.addEventListener('mousedown',proceed);
+  ov.appendChild(okBtn);
+
+  // ── ミニマップ描画（表示後にサイズ確定） ──
+  requestAnimationFrame(()=>{
+    const cv = document.getElementById('perTurnMmCanvas');
+    if(!cv || !board) return;
+    const wrapEl = cv.parentElement;
+
+    // ブロックが存在する最上行を検出
+    let topBlockRow = CFG.ROWS - 1;
+    for(let r = 0; r < CFG.ROWS; r++){
+      if(board[r].some(c => c !== 0)){ topBlockRow = r; break; }
+    }
+    // 描画開始行 = 最上ブロックの3行上（空白スペースを見せる）
+    const EXTRA_ROWS = 3;
+    const startRow = Math.max(0, topBlockRow - EXTRA_ROWS);
+    const drawRows = CFG.ROWS - startRow;
+
+    // 利用可能な幅・高さからセルサイズを逆算
+    const availW = wrapEl.clientWidth  - 5;
+    const availH = wrapEl.clientHeight;
+    const csByW  = Math.floor(availW / CFG.COLS);
+    const csByH  = Math.floor(availH / drawRows);
+    const cs     = Math.max(3, Math.min(csByW, csByH));
+
+    // キャンバスサイズを描画範囲に合わせて設定
+    const dpr  = Math.min(window.devicePixelRatio || 1, 3);
+    const logW = CFG.COLS * cs;
+    const logH = drawRows * cs;
+    cv.width        = logW * dpr;
+    cv.height       = logH * dpr;
+    cv.style.width  = logW + 'px';
+    cv.style.height = logH + 'px';
+
+    const cx = cv.getContext('2d');
+    cx.save();
+    cx.scale(dpr, dpr);
+
+    // 背景
+    cx.fillStyle = '#060d18';
+    cx.fillRect(0, 0, logW, logH);
+
+    // グリッド線
+    cx.strokeStyle = 'rgba(20,60,120,0.9)';
+    cx.lineWidth = 0.5;
+    for(let r = 0; r <= drawRows; r++){
+      cx.beginPath(); cx.moveTo(0, r*cs); cx.lineTo(logW, r*cs); cx.stroke();
+    }
+    for(let c = 0; c <= CFG.COLS; c++){
+      cx.beginPath(); cx.moveTo(c*cs, 0); cx.lineTo(c*cs, logH); cx.stroke();
+    }
+
+    // ブロック描画（startRow からの相対行で描画）
+    for(let r = startRow; r < CFG.ROWS; r++){
+      const dr = r - startRow;
+      board[r].forEach((color, c) => {
+        if(!color) return;
+        cx.fillStyle = color;
+        cx.fillRect(c*cs, dr*cs, cs, cs);
+        cx.fillStyle = 'rgba(255,255,255,0.22)';
+        cx.fillRect(c*cs, dr*cs, cs, Math.max(1, cs*0.25));
+        cx.fillStyle = 'rgba(0,0,0,0.3)';
+        cx.fillRect(c*cs, dr*cs + cs - Math.max(1, cs*0.2), cs, Math.max(1, cs*0.2));
+        cx.strokeStyle = 'rgba(0,0,0,0.4)';
+        cx.lineWidth = 0.5;
+        cx.strokeRect(c*cs+0.25, dr*cs+0.25, cs-0.5, cs-0.5);
+      });
+    }
+    cx.restore();
+
+    // ゲージ更新
+    document.getElementById('perTurnMmFill').style.height = (rem / CFG.ROWS * 100) + '%';
+  });
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  PHASE
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function setPhase(p){
+  phase=p;
+  // 通常フェーズ中はsetPhaseでHUD文言を上書きしない
+  if(normalPhaseActive) return;
+  const txt={roulette:'🎰 ルーレット待ち',move:'🕹️ 落下中',gameover:'💀 ゲームオーバー',idle:'待機中'};
+  document.getElementById('phaseVal').textContent=txt[p]||p;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  PIECE LOGIC
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function valid(b,p,dx,dy,sh){
+  sh=sh||p.shape;
+  for(let r=0;r<sh.length;r++) for(let c=0;c<sh[r].length;c++){
+    if(!sh[r][c])continue;
+    const nx=p.x+c+dx, ny=p.y+r+dy;
+    if(nx<0||nx>=CFG.COLS||ny>=CFG.ROWS)return false;
+    if(ny>=0&&b[ny][nx])return false;
+  }
+  return true;
+}
+
+function rotShape(shape){
+  const rows=shape.length,cols=shape[0].length;
+  const r=Array.from({length:cols},()=>Array(rows).fill(0));
+  for(let i=0;i<rows;i++)for(let j=0;j<cols;j++)r[j][rows-1-i]=shape[i][j];
+  return r;
+}
+
+// TICKET-05: NO wall kicks — reject if rotation collides
+function tryRotate(){
+  if(!piece||phase!=='move'||paused)return;
+  const rot=rotShape(piece.shape);
+  if(valid(board,piece,0,0,rot)){piece.shape=rot;drawBoard();}
+  // else: silently reject
+}
+
+function moveLeft(){
+  if(!piece||phase!=='move'||paused)return;
+  if(valid(board,piece,-1,0)){piece.x--;drawBoard();}
+}
+function moveRight(){
+  if(!piece||phase!=='move'||paused)return;
+  if(valid(board,piece,1,0)){piece.x++;drawBoard();}
+}
+
+// T1: Hard drop — immediately drop to bottom
+function hardDrop(){
+  if(!piece||phase!=='move'||paused)return;
+  while(valid(board,piece,0,1))piece.y++;
+  drawBoard();
+  if(normalPhaseActive){
+    normalLockPiece();
+  } else {
+    lockPiece();
+  }
+}
+
+// T1: Auto-drop timer
+function startAutoDrop(){
+  stopAutoDrop();
+  dropTimer=setInterval(()=>{
+    if(paused||phase!=='move'||!piece)return;
+    if(valid(board,piece,0,1)){
+      piece.y++;
+      drawBoard();
+    } else {
+      lockPiece();
+    }
+  }, CFG.DROP_MS);
+}
+
+function stopAutoDrop(){
+  if(dropTimer){clearInterval(dropTimer);dropTimer=null;}
+}
+
+function lockPiece(){
+  stopAutoDrop();
+  piece.shape.forEach((row,r)=>row.forEach((v,c)=>{
+    if(v&&piece.y+r>=0) board[piece.y+r][piece.x+c]=piece.color;
+  }));
+  blocksUsed++;
+
+  const n=clearLines();
+  score+=CFG.SCORE_TABLE[n]||0;
+  lines+=n;
+  if(n>0){
+    flashBoard();
+    // 消去ライン数に応じたボーナステキストを一瞬表示
+    const bonusLabels = ['','SINGLE','DOUBLE','TRIPLE','TETRIS!!'];
+    showFeedback(
+      (bonusLabels[n] || n+'LINE') + '  +' + (CFG.SCORE_TABLE[n]||0),
+      n >= 4 ? 'var(--gold)' : n >= 3 ? 'var(--cyan)' : 'var(--green)'
+    );
+  }
+
+  turns++;piece=null;
+  updateHUD();drawMini(null);drawBoard();
+  updateGoalDisplay(); // チケットB: 進捗更新
+
+  // ─── チケットB: 敗北条件 ───────────────────────────────
+  // 敗北: 新規ピース出現不能 = 上端(row0)にブロック到達
+  if(board[0].some(c=>c!==0)){
+    endGame(false,'上端超過');
+    return;
+  }
+
+  // ─── チケットB: 勝利条件（WIN_MODEで分岐） ─────────────
+  let win=false;
+  if(winMode==='clear_all'){
+    win = board.every(row=>row.every(c=>c===0));
+  } else if(winMode==='line_target'){
+    win = lines >= CFG.WIN_LINE_TARGET;
+  } else if(winMode==='height_target'){
+    win = boardMaxHeight() <= CFG.WIN_HEIGHT_TARGET;
+  }
+
+  // ─── 共通追加条件: 最下段のみにブロックが残っている状態でクリア ──
+  // row 0〜18 が全て空 かつ row 19 にブロックが1つ以上ある
+  if(!win){
+    const onlyBottomRow = board.slice(0, CFG.ROWS-1).every(row=>row.every(c=>c===0))
+                       && board[CFG.ROWS-1].some(c=>c!==0);
+    if(onlyBottomRow) win = true;
+  }
+
+  if(win){ endGame(true,''); return; }
+
+  setTimeout(()=>{setPhase('roulette');beginTurn();},400);
+}
+
+function clearLines(){
+  let n=0;
+  for(let r=CFG.ROWS-1;r>=0;r--){
+    if(board[r].every(c=>c!==0)){board.splice(r,1);board.unshift(Array(CFG.COLS).fill(0));n++;r++;}
+  }
+  return n;
+}
+
+function flashBoard(){
+  const f=document.getElementById('lineFlash');
+  f.classList.remove('on');void f.offsetWidth;f.classList.add('on');
+  setTimeout(()=>f.classList.remove('on'),450);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  DRAWING
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function drawCell(x,y,color){
+  if(!color)return;
+  gx.fillStyle=color;gx.fillRect(x*CELL+1,y*CELL+1,CELL-2,CELL-2);
+  gx.fillStyle='rgba(255,255,255,.16)';gx.fillRect(x*CELL+1,y*CELL+1,CELL-2,3);
+  gx.fillStyle='rgba(0,0,0,.2)';gx.fillRect(x*CELL+1,y*CELL+CELL-3,CELL-2,3);
+}
+
+function drawBoard(){
+  // 盤面背景: 周囲より明るい青みがかった色でくっきり区別
+  gx.fillStyle='#12122a';gx.fillRect(0,0,gc.width,gc.height);
+  // グリッド線: 少し明るくして空きマスが見やすく
+  gx.strokeStyle='rgba(60,60,120,.7)';gx.lineWidth=.5;
+  for(let r=0;r<=CFG.ROWS;r++){gx.beginPath();gx.moveTo(0,r*CELL);gx.lineTo(gc.width,r*CELL);gx.stroke();}
+  for(let c=0;c<=CFG.COLS;c++){gx.beginPath();gx.moveTo(c*CELL,0);gx.lineTo(c*CELL,gc.height);gx.stroke();}
+  board.forEach((row,r)=>row.forEach((c,col)=>drawCell(col,r,c)));
+
+  if(piece&&phase==='move'){
+    // Ghost
+    let gy=piece.y;
+    while(valid(board,{...piece,y:gy},0,1))gy++;
+    piece.shape.forEach((row,r)=>row.forEach((v,c)=>{
+      const py=gy+r;
+      if(v&&py>=0&&py<CFG.ROWS){
+        gx.fillStyle=piece.color+'28';gx.fillRect((piece.x+c)*CELL+1,py*CELL+1,CELL-2,CELL-2);
+        gx.strokeStyle=piece.color+'55';gx.lineWidth=1;gx.strokeRect((piece.x+c)*CELL+1,py*CELL+1,CELL-2,CELL-2);
+      }
+    }));
+    // Piece
+    piece.shape.forEach((row,r)=>row.forEach((v,c)=>{
+      const py=piece.y+r;
+      if(v&&py>=0&&py<CFG.ROWS)drawCell(piece.x+c,py,piece.color);
+    }));
+  }
+  drawMinimap(); // ピース落下中もリアルタイム反映
+
+  // 通常テトリスフェーズ中: 15段ラインを赤い破線で表示
+  if(normalPhaseActive){
+    const dangerRow = CFG.ROWS - 15; // row5
+    const y = dangerRow * CELL;
+    gx.save();
+    gx.strokeStyle = 'rgba(255,45,120,.8)';
+    gx.lineWidth = 1.5;
+    gx.setLineDash([6, 4]);
+    gx.beginPath();
+    gx.moveTo(0, y);
+    gx.lineTo(gc.width, y);
+    gx.stroke();
+    gx.setLineDash([]);
+    // 右端ラベル
+    gx.font = 'bold 9px monospace';
+    gx.fillStyle = 'rgba(255,45,120,.9)';
+    gx.textAlign = 'right';
+    gx.fillText('15', gc.width - 2, y - 2);
+    gx.restore();
+  }
+}
+
+function miniShape(ctx,shape,color,w,h,cs){
+  ctx.clearRect(0,0,w,h);
+  const ox=Math.floor((w-shape[0].length*cs)/2);
+  const oy=Math.floor((h-shape.length*cs)/2);
+  shape.forEach((row,r)=>row.forEach((v,c)=>{
+    if(v){ctx.fillStyle=color;ctx.fillRect(ox+c*cs+1,oy+r*cs+1,cs-2,cs-2);}
+  }));
+}
+
+function drawMini(name){
+  mx.clearRect(0,0,40,30);
+  if(!name)return;
+  miniShape(mx,PIECES[name].shape,PIECES[name].color,40,30,8);
+}
+
+// ─── ミニマップ描画（汎用） ───────────────
+// cv, cx: 描画対象キャンバスとコンテキスト
+// b:      盤面データ
+// activePiece: 描画するピース（nullも可）
+// cs:     1セルのpx数（省略時は3）
+function drawMinimapTo(cv, cx, b, activePiece, cs){
+  if(!b) return;
+  cs = cs || 3;
+
+  // DPR対応: 論理サイズはそのまま、物理ピクセルを2倍にして鮮明化
+  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  const logW = CFG.COLS * cs;
+  const logH = CFG.ROWS * cs;
+
+  if(cv.width !== logW * dpr || cv.height !== logH * dpr){
+    cv.width  = logW * dpr;
+    cv.height = logH * dpr;
+    cv.style.width  = logW + 'px';
+    cv.style.height = logH + 'px';
+  }
+
+  cx.save();
+  cx.scale(dpr, dpr);
+
+  // 背景: 濃い紺色（ブロックの色が鮮やかに映える）
+  cx.fillStyle = '#060d18';
+  cx.fillRect(0, 0, logW, logH);
+
+  // グリッド線: 青みがかった色で空きマスを視認しやすく
+  cx.strokeStyle = 'rgba(20,60,120,0.9)';
+  cx.lineWidth = 0.5;
+  for(let r = 0; r <= CFG.ROWS; r++){
+    cx.beginPath(); cx.moveTo(0, r*cs); cx.lineTo(logW, r*cs); cx.stroke();
+  }
+  for(let c = 0; c <= CFG.COLS; c++){
+    cx.beginPath(); cx.moveTo(c*cs, 0); cx.lineTo(c*cs, logH); cx.stroke();
+  }
+
+  // ブロック描画（ハイライト＋シャドウ付き）
+  b.forEach((row, r) => row.forEach((color, c) => {
+    if(!color) return;
+    // メイン塗り
+    cx.fillStyle = color;
+    cx.fillRect(c*cs, r*cs, cs, cs);
+    // 上面ハイライト
+    cx.fillStyle = 'rgba(255,255,255,0.22)';
+    cx.fillRect(c*cs, r*cs, cs, Math.max(1, cs * 0.25));
+    // 下面シャドウ
+    cx.fillStyle = 'rgba(0,0,0,0.35)';
+    cx.fillRect(c*cs, r*cs + cs - Math.max(1, cs * 0.2), cs, Math.max(1, cs * 0.2));
+    // 右面シャドウ
+    cx.fillStyle = 'rgba(0,0,0,0.2)';
+    cx.fillRect(c*cs + cs - Math.max(1, cs * 0.2), r*cs, Math.max(1, cs * 0.2), cs);
+    // セル境界線（色を少し暗く）
+    cx.strokeStyle = 'rgba(0,0,0,0.5)';
+    cx.lineWidth = 0.5;
+    cx.strokeRect(c*cs + 0.25, r*cs + 0.25, cs - 0.5, cs - 0.5);
+  }));
+
+  // 落下中のピース（明るい枠で強調）
+  if(activePiece && phase === 'move'){
+    activePiece.shape.forEach((row, r) => row.forEach((v, c) => {
+      const py = activePiece.y + r;
+      if(!v || py < 0 || py >= CFG.ROWS) return;
+      cx.fillStyle = activePiece.color;
+      cx.fillRect((activePiece.x+c)*cs, py*cs, cs, cs);
+      cx.fillStyle = 'rgba(255,255,255,0.3)';
+      cx.fillRect((activePiece.x+c)*cs, py*cs, cs, Math.max(1, cs*0.25));
+      // 白い枠で落下ピースを強調
+      cx.strokeStyle = 'rgba(255,255,255,0.7)';
+      cx.lineWidth = 0.8;
+      cx.strokeRect((activePiece.x+c)*cs + 0.4, py*cs + 0.4, cs - 0.8, cs - 0.8);
+    }));
+  }
+
+  cx.restore();
+}
+
+// ─── ゲーム中サイドバーのミニマップ ─────
+function drawMinimap(){
+  if(!board) return;
+  // サイドバー幅44pxに合わせたセルサイズ（4px）
+  const cs = 4;
+  drawMinimapTo(mmC, mmX, board, piece, cs);
+  const rem=board.filter(row=>row.some(c=>c!==0)).length;
+  document.getElementById('minimapBarFill').style.height=(rem/CFG.ROWS*100)+'%';
+  document.getElementById('sbRemain').textContent=rem;
+  document.getElementById('sbLines').textContent=lines??0;
+}
+
+function updateHUD(){
+  document.getElementById('hudScore').textContent=score;
+  document.getElementById('hudLines').textContent=lines;
+  document.getElementById('hudTurns').textContent=turns;
+  drawMinimap(); // ミニマップも同時更新
+}
+
+// T4: Count rows still containing blocks (remaining work)
+function remainingRows(){
+  return board.filter(row=>row.some(c=>c!==0)).length;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  ROULETTE 再構築
+//  設計:
+//  1. 先に当選インデックスを決定
+//  2. 当選アイテムへ向かってアニメーション
+//  3. 停止後 getBoundingClientRect() で実測スナップ
+//  4. 見た目と内部結果が必ず一致
+//
+//  定数:
+//  ITEM_SIZE = 88px  (アイテム幅 = セレクター幅)
+//  ITEM_GAP  = 10px
+//  STEP      = 98px  (1アイテム分の移動量)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const RL = {
+  ITEM_SIZE: 88,   // アイテム幅px（セレクターと完全一致）
+  GAP:       10,   // gapPX
+  get STEP(){ return this.ITEM_SIZE + this.GAP; }, // 98px
+  LOOPS:     6,    // スピン周回数
+  DUR:       2800, // アニメーション時間ms
+};
+
+let rlSpinning = false;
+
+function showRoulette(){
+  document.getElementById('rlResult').textContent = '';
+  document.getElementById('rlDrumTrack').classList.remove('decided');
+  document.getElementById('pieceSel').classList.remove('active');
+  document.getElementById('spinBtn').disabled = false;
+  document.getElementById('spinBtn').textContent = '🎰 SPIN !';
+  document.getElementById('rouletteOverlay').classList.add('active');
+  buildDrumTrack();
+  // ルーレット表示時にミニマップを描画
+  requestAnimationFrame(drawRlMinimap);
+}
+
+function hideRoulette(){
+  document.getElementById('rouletteOverlay').classList.remove('active');
+}
+
+// ルーレット内ミニマップを描画
+function drawRlMinimap(){
+  if(!board) return;
+  const cv = document.getElementById('rlMinimapCanvas');
+  if(!cv) return;
+  const cs = 7; // 4→7px でより大きく表示
+  drawMinimapTo(cv, cv.getContext('2d'), board, null, cs);
+  const rem = board.filter(row => row.some(c => c !== 0)).length;
+  document.getElementById('rlMinimapBarFill').style.height = (rem / CFG.ROWS * 100) + '%';
+  document.getElementById('rlMmRemain').innerHTML = rem + '<span class="rl-mm-unit">段</span>';
+}
+
+// ─── トラックを構築 ─────────────────────────────────
+// アイテムを LOOPS+2 周分生成してスピンに十分な長さを確保
+function buildDrumTrack(){
+  const segs  = activeSeg();
+  const track = document.getElementById('rlDrumTrack');
+  track.innerHTML = '';
+  track.style.transform = 'translateX(0)';
+  track.classList.remove('decided');
+
+  // (LOOPS + 2) 周分生成
+  const totalLoops = RL.LOOPS + 2;
+  for(let i = 0; i < totalLoops; i++){
+    segs.forEach(seg => track.appendChild(makeItem(seg)));
+  }
+}
+
+function makeItem(seg){
+  const item = document.createElement('div');
+  item.className = 'rl-item';
+  item.dataset.key = segKey(seg);
+
+  if(seg.type === 'piece'){
+    const cv = document.createElement('canvas');
+    cv.width = 64; cv.height = 46;
+    miniShape(cv.getContext('2d'), PIECES[seg.name].shape, seg.color, 64, 46, 12);
+    item.appendChild(cv);
+  } else {
+    const d = document.createElement('div');
+    d.style.cssText = 'font-size:1.9rem;line-height:1;';
+    d.textContent = seg.type === 'free' ? '⭐' : '🃏';
+    item.appendChild(d);
+  }
+
+  const lbl = document.createElement('span');
+  lbl.textContent  = seg.label;
+  lbl.style.color  = seg.color;
+  lbl.style.fontWeight = '700';
+  item.appendChild(lbl);
+
+  return item;
+}
+
+// ─── スピン ─────────────────────────────────────────
+function doSpin(){
+  if(rlSpinning) return;
+
+  const segs = activeSeg();
+  const n    = segs.length;
+  rlSpinning = true;
+  document.getElementById('spinBtn').disabled = true;
+
+  // ① 先に当選を決定（見た目と分離しない）
+  const winIdx = Math.floor(Math.random() * n);
+
+  // ② トラックの当選アイテムインデックスを特定
+  //    LOOPS周目の winIdx 番目をターゲットにする
+  const targetIdx = RL.LOOPS * n + winIdx;
+
+  const track = document.getElementById('rlDrumTrack');
+  const wrap  = document.getElementById('rlDrumWrap');
+
+  // ③ 停止時のtranslateXを計算
+  //    アイテム[i]の中心 = i * STEP + ITEM_SIZE/2
+  //    ドラム中心 = wrap.offsetWidth / 2
+  //    translateX = wrap.offsetWidth/2 - targetIdx*STEP - ITEM_SIZE/2
+  const wrapW  = wrap.offsetWidth;
+  const finalX = Math.round(wrapW / 2 - targetIdx * RL.STEP - RL.ITEM_SIZE / 2);
+
+  // ④ スピン開始位置: アイテム0が中央に来る位置
+  //    + ランダム周回分だけ右にオフセット（左向きに流れる）
+  const startX = Math.round(wrapW / 2 - RL.ITEM_SIZE / 2 + RL.LOOPS * n * RL.STEP);
+
+  // 初期位置をセット（transitionなし）
+  track.style.transition = 'none';
+  track.style.transform  = `translateX(${startX}px)`;
+
+  // 1フレーム待ってからアニメーション開始（transitionリセット確定後）
+  requestAnimationFrame(()=> requestAnimationFrame(()=>{
+    const begin = performance.now();
+    const ease  = t => 1 - Math.pow(1 - t, 3.5); // ease-out cubic
+
+    function anim(now){
+      const t   = Math.min((now - begin) / RL.DUR, 1);
+      const cur = Math.round(startX + (finalX - startX) * ease(t));
+      track.style.transform = `translateX(${cur}px)`;
+
+      if(t < 1){
+        requestAnimationFrame(anim);
+      } else {
+        // ⑤ 計算値でスナップ
+        track.style.transform = `translateX(${finalX}px)`;
+
+        // ⑥ getBoundingClientRect() 実測で最終補正
+        //    サブピクセル誤差をゼロに
+        finalSnap(track, wrap, targetIdx, segs[winIdx]);
+      }
+    }
+    requestAnimationFrame(anim);
+  }));
+}
+
+// ─── 停止後スナップ ──────────────────────────────────
+// 実座標を実測して当選アイテムをドラム中心へ正確に合わせる
+function finalSnap(track, wrap, targetIdx, winSeg){
+  const items = [...track.querySelectorAll('.rl-item')];
+
+  // ドラム中心X（ページ座標）
+  const wrapRect  = wrap.getBoundingClientRect();
+  const drumCX    = wrapRect.left + wrapRect.width / 2;
+
+  // 当選アイテムを実測
+  const target    = items[targetIdx];
+  if(!target){ onWin(winSeg); rlSpinning = false; return; }
+
+  const tRect     = target.getBoundingClientRect();
+  const targetCX  = tRect.left + tRect.width / 2;
+
+  // 差分補正: 現在のtranslateX + ズレ分
+  const matrix    = new DOMMatrixReadOnly(window.getComputedStyle(track).transform);
+  const corrected = Math.round(matrix.m41 + (drumCX - targetCX));
+  track.style.transform = `translateX(${corrected}px)`;
+
+  // ⑦ 当選ハイライト + 非当選を暗転
+  items.forEach(item => item.classList.remove('sel'));
+  target.classList.add('sel');
+  // 短い遅延後に .decided クラスで他アイテムを暗くする
+  setTimeout(()=> track.classList.add('decided'), 80);
+
+  rlSpinning = false;
+  onWin(winSeg);
+}
+
+// ─── 当選処理 ────────────────────────────────────────
+function onWin(seg){
+  const el = document.getElementById('rlResult');
+  if(seg.type === 'piece'){
+    el.style.color = seg.color;
+    el.textContent = `「 ${seg.name} 」ピース決定！`;
+    setTimeout(()=>{ hideRoulette(); setTimeout(()=> launchPiece(seg.name), 80); }, 1400);
+  } else if(seg.type === 'free'){
+    el.style.color = '#ffd700';
+    el.textContent = '⭐ FREE — 好きに選んで！';
+    setTimeout(buildPieceSelector, 650);
+  } else {
+    // JOKER: 何も起こらない（ターンスキップ）
+    el.style.color = '#ff2d78';
+    el.textContent = '🃏 JOKER！このターンは何も起きない…';
+    setTimeout(()=>{
+      hideRoulette();
+      turns++;
+      updateHUD();
+      setTimeout(()=>{ setPhase('roulette'); beginTurn(); }, 400);
+    }, 1800);
+  }
+}
+
+// ─── FREE ピース選択 ─────────────────────────────────
+function buildPieceSelector(){
+  const g = document.getElementById('psGrid');
+  g.innerHTML = '';
+  PNAMES.forEach(name => {
+    const p   = PIECES[name];
+    const btn = document.createElement('button');
+    btn.className = 'ps-btn';
+    const cv = document.createElement('canvas');
+    cv.width = 52; cv.height = 36;
+    miniShape(cv.getContext('2d'), p.shape, p.color, 52, 36, 10);
+    btn.appendChild(cv);
+    const lbl = document.createElement('span');
+    lbl.textContent = name;
+    btn.appendChild(lbl);
+    btn.style.borderColor = p.color + '66';
+    const pick = ()=>{ hideRoulette(); setTimeout(()=> launchPiece(name), 80); };
+    btn.addEventListener('touchstart', e=>{ e.preventDefault(); pick(); }, {passive:false});
+    btn.addEventListener('mousedown', pick);
+    g.appendChild(btn);
+  });
+  document.getElementById('pieceSel').classList.add('active');
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  チケットD: PIECE LAUNCH (安全スポーン)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function launchPiece(name){
+  const p = PIECES[name];
+  const sh = p.shape.map(r=>[...r]);
+  const shW = sh[0].length;
+  const shH = sh.length;
+  const centerX = Math.floor((CFG.COLS - shW) / 2);
+
+  // D-①: 盤面の最高到達行を調べ、その上2行からスポーンを試みる
+  let topRow = CFG.ROWS; // 最も上にあるブロックの行番号
+  for(let r=0;r<CFG.ROWS;r++){
+    if(board[r].some(c=>c!==0)){ topRow=r; break; }
+  }
+  // スポーン開始Y = 盤面最高点の2マス上（最低でも -shH）
+  const spawnStartY = Math.min(-1, topRow - shH - 2);
+
+  piece = { name, color:p.color, shape:sh, x:centerX, y:spawnStartY };
+
+  // D-②: 中央X・スポーン開始Yから下方向にスキャン
+  let ok = false;
+  for(let tryY = spawnStartY; tryY <= Math.min(0, topRow - 1); tryY++){
+    piece.y = tryY;
+    if(valid(board, piece, 0, 0)){ ok=true; break; }
+  }
+
+  // D-③: 中央Xが塞がれている場合、±X方向を探索
+  if(!ok){
+    outer:
+    for(let dx=1; dx<CFG.COLS; dx++){
+      for(const xo of [dx,-dx]){
+        const nx = centerX + xo;
+        if(nx<0 || nx+shW>CFG.COLS) continue;
+        piece.x = nx;
+        for(let tryY=spawnStartY; tryY<=0; tryY++){
+          piece.y = tryY;
+          if(valid(board, piece, 0, 0)){ ok=true; break outer; }
+        }
+      }
+    }
+  }
+
+  // D-④: 全探索失敗 = 出現不能 → GAME OVER
+  if(!ok){
+    endGame(false,'出現不能');
+    return;
+  }
+
+  drawMini(name);
+  setPhase('move');
+  drawBoard();
+
+  // D-⑤: グレースタイム — 出現直後 SPAWN_GRACE_MS ms は自動落下を遅延
+  //       プレイヤーが初期位置を確認・調整できる猶予を与える
+  setPhase('move');
+  document.getElementById('phaseVal').textContent = '🕹️ 準備中…';
+  setTimeout(()=>{
+    if(phase==='move' && piece){
+      document.getElementById('phaseVal').textContent = '🕹️ 落下中';
+      startAutoDrop();
+    }
+  }, CFG.SPAWN_GRACE_MS);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  RESULT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function endGame(win, reason){
+  stopAutoDrop();
+  setPhase('gameover');piece=null;drawBoard();
+  const rem = remainingRows();
+  const h   = boardMaxHeight();
+
+  // チケットB: モード別勝利メッセージ
+  const winMsgs = {
+    clear_all:     `🎉 完璧！${turns}ターンで全消し達成！`,
+    line_target:   `🎉 ${lines}ライン消去達成！（${turns}ターン）`,
+    height_target: `🎉 高さ${h}段まで削減達成！（${turns}ターン）`,
+    bottom_clear:  `🎉 最下段まで到達！${turns}ターンでクリア！`,
+  };
+
+  // 勝利メッセージの選択: 最下段クリアかモード別か判定
+  const winMsgKey = (win && board && board[CFG.ROWS-1] && board[CFG.ROWS-1].every(c=>c===0) && winMode!=='clear_all')
+    ? 'bottom_clear'
+    : winMode;
+  // チケットB/D: 敗北理由別メッセージ
+  const loseMsgs = {
+    '上端超過':  `上端超過 | 残${rem}段 | ${lines}L消去 | ${turns}T`,
+    '出現不能':  `出現不能 | 残${rem}段 | ${lines}L消去 | ${turns}T`,
+    '':          `残${rem}段 | ${lines}L消去 | ${turns}T`,
+  };
+
+  setTimeout(()=>{
+    const t=document.getElementById('resTitle');
+    t.textContent = win ? '🎉 CLEAR !' : '💀 GAME OVER';
+    t.className   = 'res-title '+(win?'res-win':'res-lose');
+    document.getElementById('rcScore').textContent  = score;
+    document.getElementById('rcLines').textContent  = lines;
+    document.getElementById('rcTurns').textContent  = turns;
+    document.getElementById('rcBlocks').textContent = blocksUsed;
+    const modeTag = gameMode==='gameover_reverse' ? '【引き継ぎ】' : '';
+    document.getElementById('resSub').textContent   = win
+      ? modeTag + (winMsgs[winMsgKey] || winMsgs.clear_all)
+      : modeTag + (loseMsgs[reason] || loseMsgs['']);
+    showScreen('resultScreen');
+  }, 600);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  CONTROLS — スワイプ移動 / タップ回転
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// ─── スワイプ設定 ────────────────────
+const SWIPE = {
+  MIN_DIST:  18,   // スワイプと認識する最小移動距離(px)
+  MAX_TAP:   10,   // タップと認識する最大移動距離(px)
+  STEP_PX:   28,   // 1マス分のスワイプ距離(px) — 長くスワイプで複数マス移動
+  REPEAT_MS: 80,   // 長押しスワイプ時の繰り返し間隔(ms)
+};
+
+// ─── 視覚フィードバック ─────────────
+let fbTimer = null;
+function showFeedback(text, color){
+  const el = document.getElementById('swipeFeedback');
+  el.textContent = text;
+  el.style.color = color;
+  el.classList.add('show');
+  clearTimeout(fbTimer);
+  fbTimer = setTimeout(()=>el.classList.remove('show'), 220);
+}
+
+// ─── タッチ状態 ─────────────────────
+let touchStartX = 0, touchStartY = 0;
+let touchStartTime = 0;
+let swipeActive = false;
+let lastSwipeX  = 0;
+let swipeRepeatTimer = null;
+
+// ─── ホールド（長押し）落下速度UP ───────
+const HOLD_DELAY   = 300;  // 長押し判定までの待機ms
+const HOLD_DROP_MS = 80;   // 長押し中の落下間隔ms（通常800msの約10倍速）
+let holdTimer    = null;   // 長押し判定タイマー
+let holdActive   = false;  // 現在速度UP中かどうか
+
+function startHoldDrop(){
+  if(holdActive || phase !== 'move' || paused || !piece) return;
+  holdActive = true;
+  // 速度UPで再起動
+  stopAutoDrop();
+  dropTimer = setInterval(()=>{
+    if(paused || phase !== 'move' || !piece){ stopHoldDrop(); return; }
+    if(valid(board, piece, 0, 1)){
+      piece.y++;
+      drawBoard();
+    } else {
+      lockPiece();
+    }
+  }, HOLD_DROP_MS);
+  showFeedback('⚡', 'var(--gold)');
+}
+
+function stopHoldDrop(){
+  if(!holdActive) return;
+  holdActive = false;
+  // 通常速度に戻す
+  stopAutoDrop();
+  if(phase === 'move' && piece && !paused){
+    startAutoDrop();
+  }
+}
+
+function clearSwipeTimer(){
+  if(swipeRepeatTimer){ clearInterval(swipeRepeatTimer); swipeRepeatTimer=null; }
+}
+
+// ─── ゲームボード全体でタッチを受け取る ─
+const gameScreen = document.getElementById('gameScreen');
+
+gameScreen.addEventListener('touchstart', e=>{
+  if(e.target.closest('button')) return;
+  if(phase!=='move'||paused) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  touchStartX = t.clientX;
+  touchStartY = t.clientY;
+  touchStartTime = Date.now();
+  lastSwipeX = t.clientX;
+  swipeActive = false;
+  clearSwipeTimer();
+  // 長押しタイマー開始
+  holdTimer = setTimeout(()=>{
+    // スワイプしていない場合のみ速度UP
+    if(!swipeActive) startHoldDrop();
+  }, HOLD_DELAY);
+},{passive:false});
+
+gameScreen.addEventListener('touchmove', e=>{
+  if(e.target.closest('button')) return;
+  if(phase!=='move'||paused) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  const dx = t.clientX - touchStartX;
+  const dy = t.clientY - touchStartY;
+  const adx = Math.abs(dx), ady = Math.abs(dy);
+
+  // 下スワイプ判定: 縦移動が横より大きく、下方向
+  if(ady > SWIPE.MIN_DIST && ady > adx * 1.5 && dy > 0 && !swipeActive){
+    swipeActive = true;
+    clearTimeout(holdTimer); holdTimer = null; // 長押しキャンセル
+    stopHoldDrop();
+    hardDrop();
+    showFeedback('⬇ DROP', 'var(--gold)');
+    return;
+  }
+
+  // 水平スワイプ判定
+  if(adx > SWIPE.MIN_DIST && adx > ady * 1.2){
+    if(!swipeActive){ clearTimeout(holdTimer); holdTimer = null; stopHoldDrop(); } // 長押しキャンセル
+    swipeActive = true;
+    const stepsMoved = Math.floor(Math.abs(t.clientX - lastSwipeX) / SWIPE.STEP_PX);
+    if(stepsMoved >= 1){
+      const dir = dx > 0 ? 1 : -1;
+      for(let i=0;i<stepsMoved;i++){
+        if(dir > 0){ moveRight(); }
+        else        { moveLeft();  }
+      }
+      showFeedback(dx>0 ? '▶' : '◀', 'var(--cyan)');
+      lastSwipeX = t.clientX;
+    }
+  }
+},{passive:false});
+
+gameScreen.addEventListener('touchend', e=>{
+  if(e.target.closest('button')) return;
+  if(phase!=='move'||paused) return;
+  e.preventDefault();
+  clearSwipeTimer();
+  // 長押しタイマーキャンセル・速度UP解除
+  clearTimeout(holdTimer); holdTimer = null;
+  stopHoldDrop();
+
+  const t = e.changedTouches[0];
+  const dx = t.clientX - touchStartX;
+  const dy = t.clientY - touchStartY;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  const elapsed = Date.now() - touchStartTime;
+
+  // タップ判定: 移動距離が小さく、時間も短い
+  if(!swipeActive && dist < SWIPE.MAX_TAP && elapsed < 300){
+    tryRotate();
+    showFeedback('↻', 'var(--cyan)');
+  }
+  swipeActive = false;
+},{passive:false});
+
+// ─── マウス操作（PC/デバッグ用）────
+let mouseDown = false;
+let mouseStartX = 0, mouseLastX = 0;
+
+gameScreen.addEventListener('mousedown', e=>{
+  if(e.target.closest('button')) return;
+  if(phase!=='move'||paused) return;
+  mouseDown = true;
+  mouseStartX = e.clientX;
+  mouseLastX  = e.clientX;
+});
+
+gameScreen.addEventListener('mousemove', e=>{
+  if(!mouseDown||phase!=='move'||paused) return;
+  const dx = e.clientX - mouseStartX;
+  const steps = Math.floor(Math.abs(e.clientX - mouseLastX) / SWIPE.STEP_PX);
+  if(steps >= 1 && Math.abs(dx) > SWIPE.MIN_DIST){
+    const dir = e.clientX > mouseLastX ? 1 : -1;
+    for(let i=0;i<steps;i++){
+      if(dir > 0) moveRight(); else moveLeft();
+    }
+    mouseLastX = e.clientX;
+  }
+});
+
+gameScreen.addEventListener('mouseup', e=>{
+  if(e.target.closest('button')) return;
+  if(!mouseDown) return;
+  const dx = e.clientX - mouseStartX;
+  if(Math.abs(dx) < SWIPE.MAX_TAP){
+    tryRotate(); // クリック（移動なし）= 回転
+  }
+  mouseDown = false;
+});
+
+// ─── ボタン ──────────────────────────
+function tap(id,fn){
+  const el=document.getElementById(id);
+  el.addEventListener('touchstart',e=>{e.preventDefault();fn();},{passive:false});
+  el.addEventListener('mousedown',fn);
+}
+
+tap('btnPause', ()=>{
+  if(phase==='gameover'||phase==='idle')return;
+  paused=!paused;
+  document.getElementById('btnPause').textContent=paused?'▶':'⏸';
+  document.getElementById('phaseVal').textContent=paused?'⏸ 一時停止':
+    ({roulette:'🎰 ルーレット待ち',move:'🕹️ 落下中'}[phase]||phase);
+});
+
+// ─── キーボード（PC用） ──────────────
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft')  { moveLeft();   showFeedback('◀','var(--cyan)'); }
+  if(e.key==='ArrowRight') { moveRight();  showFeedback('▶','var(--cyan)'); }
+  if(e.key==='ArrowUp'||e.key==='z'||e.key==='Z') { tryRotate(); showFeedback('↻','var(--cyan)'); }
+  if(e.key==='ArrowDown'||e.key===' '){ e.preventDefault(); hardDrop(); }
+});
+
+// ─── リサイズ ────────────────────────
+window.addEventListener('resize',()=>{
+  if(document.getElementById('gameScreen').classList.contains('active')){resizeBoard();drawBoard();}
+});
+
+// ═══════════════════════════════════════════
+//  PWA: Service Worker 登録 ＆ インストール促進
+// ═══════════════════════════════════════════
+
+// Service Worker をインライン Blob で登録（外部ファイル不要）
+if('serviceWorker' in navigator){
+  const swCode = `
+    const CACHE = 'ookuiTetris-v1';
+    self.addEventListener('install', e => {
+      e.waitUntil(
+        caches.open(CACHE).then(c => c.addAll([location.pathname || '/']))
+      );
+      self.skipWaiting();
+    });
+    self.addEventListener('activate', e => {
+      e.waitUntil(caches.keys().then(keys =>
+        Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+      ));
+      self.clients.claim();
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(
+        caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match(e.request)))
+      );
+    });
+  `;
+  const swBlob = new Blob([swCode], {type:'application/javascript'});
+  const swURL  = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swURL, {scope:'/'})
+    .catch(()=>{}); // ローカルファイルでは失敗することがあるが無視
+}
+
+// インストール促進バナー（初回のみ表示）
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallBanner();
+});
+
+function showInstallBanner(){
+  if(document.getElementById('installBanner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'installBanner';
+  banner.style.cssText = [
+    'position:fixed;bottom:0;left:0;right:0;z-index:999;',
+    'background:#16162a;border-top:1px solid #ff2d78;',
+    'padding:10px 14px;display:flex;align-items:center;gap:10px;',
+    'font-family:"M PLUS Rounded 1c",sans-serif;',
+  ].join('');
+
+  const txt = document.createElement('div');
+  txt.style.cssText = 'flex:1;font-size:.72rem;color:#eeeeff;line-height:1.5;';
+  txt.innerHTML = '🍽️ <b>大食いテトリス</b><br><span style="font-size:.6rem;color:#55558a;">ホーム画面に追加してアプリとして使えます</span>';
+  banner.appendChild(txt);
+
+  const installBtn = document.createElement('button');
+  installBtn.textContent = '追加';
+  installBtn.style.cssText = 'font-family:"Orbitron",monospace;font-size:.7rem;font-weight:700;padding:8px 16px;background:#ff2d78;border:none;border-radius:20px;color:#fff;cursor:pointer;white-space:nowrap;flex-shrink:0;';
+  installBtn.onclick = async () => {
+    if(deferredPrompt){
+      deferredPrompt.prompt();
+      const {outcome} = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+    }
+    banner.remove();
+  };
+  banner.appendChild(installBtn);
+
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = '✕';
+  closeBtn.style.cssText = 'background:none;border:none;color:#55558a;font-size:1rem;cursor:pointer;padding:4px;flex-shrink:0;';
+  closeBtn.onclick = () => banner.remove();
+  banner.appendChild(closeBtn);
+
+  document.body.appendChild(banner);
+}
+
+// iOS Safari 向け：「ホーム画面に追加」の案内を表示
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                  || window.navigator.standalone;
+if(isIOS && !isStandalone){
+  setTimeout(()=>{
+    if(document.getElementById('installBanner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'installBanner';
+    banner.style.cssText = [
+      'position:fixed;bottom:0;left:0;right:0;z-index:999;',
+      'background:#16162a;border-top:1px solid #ff2d78;',
+      'padding:12px 14px 20px;',
+      'font-family:"M PLUS Rounded 1c",sans-serif;',
+      'text-align:center;',
+    ].join('');
+    banner.innerHTML = `
+      <div style="font-size:.72rem;color:#eeeeff;line-height:1.8;">
+        🍽️ <b>大食いテトリス</b> をアプリとして保存<br>
+        <span style="font-size:.62rem;color:#55558a;">
+          Safari の <b style="color:#00e5ff;">共有ボタン</b> → <b style="color:#00e5ff;">ホーム画面に追加</b>
+        </span>
+      </div>
+      <button onclick="this.parentElement.remove()" style="margin-top:8px;background:none;border:1px solid #2a2a50;border-radius:20px;color:#55558a;font-size:.65rem;padding:5px 18px;cursor:pointer;">閉じる</button>
+    `;
+    document.body.appendChild(banner);
+    setTimeout(()=>{ banner.style.transition='opacity .5s'; banner.style.opacity='0'; setTimeout(()=>banner.remove(),500); }, 8000);
+  }, 2000);
+}
+</script>
+
+</body>
+</html>
